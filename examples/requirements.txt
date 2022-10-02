@@ -1,0 +1,44 @@
+<b><i>Карандаш</i></b> - Sketch,  Drawing,  Pencil Art, Colored Pencil,Ballpoint pen art
+<b><i>Акварель</i></b> -  Canvas,  Color Field Painting,  Acrylic Paint, Oil Paint
+<b><i>Балончик</i></b> с краской -  Dripping Paint,  Splatter Paint,  Spray Paint
+<b><i>Оригами</i></b> - Kirigami,  Origami, Rigid Origami, Modular Origami
+<b><i>Свет</i></b> - Light Art, Light Painting, Lightpainting
+<b><i>Вырезы</i></b> - Carving, Whittling, Wood-Carving,Ice-Carving
+<b><i>Керамика</i></b> и стекло - Glaze, Inglaze,Ornament, Bone Chine
+<b><i>Мозайка</i></b> - Mosaic, Micromosaic, Glass Mosaic
+<b><i>Рамки</i></b> - Frame, Framed, Wooden Frame, Wooden Framed
+<b><i>Фильм/Кино</i></b> - Cinematic, Dramatic, Film Grain, Glamor Shot,
+<b><i>Размытый фон</i></b> - Bokeh, Blure, Field of View, Blurry, Tilt Blur
+<b><i>Размытие в движении</i></b> - High-Speed Photograph, Intentional camera movement
+<b><i>Lenses and Perspective</i></b> - Macro, Telephoto, 360 Panorama, Fisheye Lens,Panorama, DOF
+<b><i>Настройки Камеры</i></b> - Expouse, Double-Expouse, F/2.8,F/12,Gamma, Sigma 105mm F2.8, Wide angle lens, 15mm
+<b><i>Лучи света</i></b> - Lens Flare, Blinks, Rays Light
+<b><i>Трёхмерность</i></b> - 2D,2.5D,3D,4D,5D
+<b><i>Разрешение</i></b> - 4k, 8K, 16k, Full-HD, Ultra-HD, Super-Resolution, Megapixel
+
+――――――――――――――――――――――――――
+
+<b><i>Одежда, обувь</i></b> - Clothes, shoes, and individual, Costumes, outfits, costumery
+<b><i>Архитектура</i></b> - Architecture, buildings, wings, Domestic interiors, home design,Interior
+<b><i>Природа,Пейзаж</i></b> - Gardens, landscaping, natural
+<b><i>Текстура</i></b> - Amigurumi, Papercraft, origami, Knitting patterns
+<b><i>Стеклянный шар</i></b> - Snowglobe,Glass paperweight
+
+―――――――――――――――――――――――――――
+
+<b><i>Резина</i></b> - Rubber, Balloon, Latex, Nitrile, Silicone, Silly Band
+<b><i>Консистенция</i></b> - Gel, Aerogel, Softgel, Jellyfish, Ballistic Foam, Sponge, Spongy
+<b><i>Лёд</i></b> - Ice, Blue-Ice, Dry Ice, Snow, Snowflake
+<b><i>Волосы и Мех</i></b> - Hairy, Furry, Fuzz, Beard, Tiger, Feathers
+<b><i>Жидкости</i></b> - Liquid, Water, Lava, Magma, Oil, Sea Foam, Waterfall, River, Lake, Ocean
+<b><i>Слизь/Слайм</i></b> - Slime, Flubber, Putty
+<b><i>Наклейки/Скотч</i></b> - Tape, Duct Tape, Scotch Tape, Glue
+<b><i>Дымка,Туман</i></b> - Vapor, FOG, Mist, Gas, Aerosol,Smoke
+<b><i>Еда</i></b> - Jelly, Wagyu, Butter, Cheese, Egg, Beans, Bread, Cake, Sauce
+<b><i>Шоколад и сладости</i></b> - Syrup, Ice Cream, Candy, Lollipop, Chocolate, Cinnamon, Caramel, Gum
+<b><i>Напитки</i></b> - Coffee, Tea, Soda, Juicy
+<b><i>Растения</i></b> - Plant, Grass, Grassy, Flowers, Floral, Branches, Leaves, Acorn, Trees
+<b><i>Пост-Процессинг</i></b> - Ray Tracing Reflections, Lumen, Reflections
+<b><i>Фильтры</i></b> - Chromatic Aberration, Anaglyph, Parallax, Wavy
+<b><i>Шейдеры</i></b> - Ray Traced, Anti-Aliasing, FXAA, TXAA, RTX, SSAO, Shaders, VFX, SFX
+<b><i>Типы плёнок</i></b> - Night Vision, DSLR, Polaroid, 35mm, InstaX, Fujifilm, Photogram, Retro, Vintage
