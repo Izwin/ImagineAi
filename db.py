@@ -68,3 +68,5 @@ def GetUserByChatId(_conn, _chatId):
 
 Conn = CreateConnection("DataBases/database.db")
 CreateTable(Conn)
+_cur = Conn.cursor()
+_cur.execute("DROP TABLE `sqlite_sequence`")
