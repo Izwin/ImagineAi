@@ -90,6 +90,3 @@ def createMenu(message):
 
 print("HELLO WORLD!!!))))))))))))))))))))")
 bot.infinity_polling()
-
-fuad zamanov
-
