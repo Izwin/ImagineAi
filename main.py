@@ -1,6 +1,6 @@
 import base64
 import os.path
-
+from googletrans import Translator
 from dalle2 import Dalle2
 import telebot
 from telebot import types
@@ -30,6 +30,14 @@ def premiumFetch(text,message):
             image = telebot.types.InputMediaPhoto(img)
             list.append(image)
 
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+    credits = types.KeyboardButton("💰Мои кредиты💰")
+    buy_credits = types.KeyboardButton("💳Купить кредиты💳")
+    requests = types.KeyboardButton("💬Примеры запросов💬")
+    support = types.KeyboardButton("☎Поддержка☎")
+    markup.add(credits, buy_credits, requests, support)
+
+
     bot.send_media_group(message.chat.id, list)
 
 def isPromt(text):
@@ -48,19 +56,21 @@ def freeFetch(text, message):
         image = telebot.types.InputMediaPhoto(base64.decodebytes(i.encode("utf-8")))
         list.append(image)
 
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+    credits = types.KeyboardButton("💰Мои кредиты💰")
+    buy_credits = types.KeyboardButton("💳Купить кредиты💳")
+    requests = types.KeyboardButton("💬Примеры запросов💬")
+    support = types.KeyboardButton("☎Поддержка☎")
+    markup.add(credits, buy_credits, requests, support)
+
     bot.send_media_group(message.chat.id, list)
     result.save_images()  # Saves the generated images to 'current working directory/generated', you can also provide a custom path
 
 
 @bot.message_handler(commands=['start'])
 def greet(message):
-    startMessage = f'Привет, <b>{message.from_user.first_name}</b>!\n\n' \
-                   f'Пришли мне любой запрос состоящий из текста через Imagine (Imagine, ваш текст)\n\n' \
-                   f'<b>Запрос должен быть строго на Английском языке</b>\n\n' \
-                   f'Пример запроса:  "Imagine, a surrealist dream-like oil painting by Salvador Dalí of a cat playing checkers" (Платная/Бесплатная)'
 
-    mes = f'Привет, <b>{message.from_user.first_name}</b>! Пришли мне любой запрос состоящий из текста через Imagine (Imagine, ваш текст)\n<b>Запрос должен быть строго на Английском языке</b>\nПример запроса: "Imagine, a surrealist dream-like oil painting by Salvador Dalí of a cat playing checkers"(Платная/Бесплатная)'
-    bot.send_message(message.chat.id, startMessage, parse_mode="html")
+    createStartMenu(message)
     list = []
     list.append(telebot.types.InputMediaPhoto(Image.open("examples/paid.jpg")))
     list.append(telebot.types.InputMediaPhoto(Image.open("examples/paid2.jpg")))
@@ -68,39 +78,87 @@ def greet(message):
     list.append(telebot.types.InputMediaPhoto(Image.open("examples/free2.jpg")))
     bot.send_media_group(message.chat.id,list)
 
+@bot.message_handler(commands=['imagine'])
+def greet(message):
+    global promt
+
+    text = str(message.text).replace("/imagine, ", "")
+    if "@imagineai_bot" in text:
+        text = text.replace("@imagineai_bot","")
+    print(text)
+    promt = text
+
+    translator = Translator()
+    promt = translator.translate(text).text
+    print(promt)
+    createMenu(message)
+
 
 
 
 @bot.message_handler(content_types="text")
 def handleText(message):
+    bot.forward_message(-812810983,message.chat.id,message.message_id)
     global promt
-
-    if message.text == "Бесплатно":
+    print(message)
+    if message.text == "Бесплатно 🎁":
         bot.send_message(message.chat.id, "Ваш запрос отправлен!")
         print(promt)
         freeFetch(promt, message)
 
-    elif message.text == "Платно":
+    elif message.text == "Платно 💳":
         bot.send_message(message.chat.id, "Ваш запрос отправлен!")
         premiumFetch(promt, message)
+
+    elif message.text == "💬Примеры запросов💬":
+        f = open("examples/requirements.txt","r",encoding="utf-8")
+
+        bot.send_message(message.chat.id, f.read(),parse_mode="html")
+    elif message.text == "💰Мои кредиты💰":
+        bot.send_message(message.chat.id, "У вас 0 кредитов")
+    elif message.text == "💳Купить кредиты💳":
+        bot.send_message(message.chat.id, "Бабки сюда на киви: 994513850037")
+    elif message.text == "☎Поддержка☎":
+        bot.send_message(message.chat.id, "994513850037 suda zvoni poqovorim))")
+
+
     if (isPromt(message.text)):
 
         text = str(message.text).replace("Imagine, ","")
+        print(text)
         promt = text
 
+        translator = Translator()
+        promt = translator.translate(text).text
 
         createMenu(message)
 
 
+@bot.message_handler(content_types="photo")
+def handleText(message):
+    bot.forward_message(-812810983,message.chat.id,message.message_id)
 def createMenu(message):
     print("createMenu")
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    free = types.KeyboardButton("Бесплатно")
-    paid = types.KeyboardButton("Платно")
+    free = types.KeyboardButton("Бесплатно 🎁")
+    paid = types.KeyboardButton("Платно 💳")
     markup.add(free)
     markup.add(paid)
     bot.send_message(message.chat.id, text="Выберите способ", reply_markup=markup)
 
+def createStartMenu(message):
+    startMessage = f'Привет, <b>{message.from_user.first_name}</b>!\n\n' \
+                   f'Пришли мне любой запрос состоящий из текста через Imagine (Imagine, ваш текст)\n\n' \
+                   f'<b>Запрос должен быть строго на Английском языке</b>\n\n' \
+                   f'Пример запроса:  "Imagine, a surrealist dream-like oil painting by Salvador Dalí of a cat playing checkers" (Платная/Бесплатная)'
+
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True,row_width=2)
+    credits = types.KeyboardButton("💰Мои кредиты💰")
+    buy_credits = types.KeyboardButton("💳Купить кредиты💳"   )
+    requests = types.KeyboardButton("💬Примеры запросов💬")
+    support = types.KeyboardButton("☎Поддержка☎")
+    markup.add(credits,buy_credits,requests,support)
+    bot.send_message(message.chat.id, startMessage,reply_markup=markup,parse_mode="html")
 
 print("HELLO WORLD!!!))))))))))))))))))))")
 bot.infinity_polling()
