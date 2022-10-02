@@ -1,4 +1,6 @@
 import base64
+import os.path
+
 from dalle2 import Dalle2
 import telebot
 from telebot import types
@@ -6,11 +8,11 @@ from urlextract import URLExtract
 from PIL import Image
 import urllib.request
 from craiyon import Craiyon
+from pathlib import Path
 
 API_KEY = "5497414946:AAFByjMLiHy9xnKtzFv9I2CftSqglQT7gtY"
 bot = telebot.TeleBot(API_KEY)
 promt = ""
-
 
 def premiumFetch(text,message):
     dalle = Dalle2("sess-4zmYspys77WdJzzNDHUpkge1dzzNgvcnmFGLg3tJ")
@@ -52,8 +54,20 @@ def freeFetch(text, message):
 
 @bot.message_handler(commands=['start'])
 def greet(message):
-    mes = f'Привет, <b>{message.from_user.first_name}</b>! Пришли мне любой текст в формате: Imagine, ..., и я переведу его в картинку! Создатели: @raufkhalilov @sheluvsshmmookyyy'
-    bot.send_message(message.chat.id, mes, parse_mode="html")
+    startMessage = f'Привет, <b>{message.from_user.first_name}</b>!\n\n' \
+                   f'Пришли мне любой запрос состоящий из текста через Imagine (Imagine, ваш текст)\n\n' \
+                   f'<b>Запрос должен быть строго на Английском языке</b>\n\n' \
+                   f'Пример запроса:  "Imagine, a surrealist dream-like oil painting by Salvador Dalí of a cat playing checkers" (Платная/Бесплатная)'
+
+    mes = f'Привет, <b>{message.from_user.first_name}</b>! Пришли мне любой запрос состоящий из текста через Imagine (Imagine, ваш текст)\n<b>Запрос должен быть строго на Английском языке</b>\nПример запроса: "Imagine, a surrealist dream-like oil painting by Salvador Dalí of a cat playing checkers"(Платная/Бесплатная)'
+    bot.send_message(message.chat.id, startMessage, parse_mode="html")
+    list = []
+    list.append(telebot.types.InputMediaPhoto(Image.open("examples/paid.jpg")))
+    list.append(telebot.types.InputMediaPhoto(Image.open("examples/paid2.jpg")))
+    list.append(telebot.types.InputMediaPhoto(Image.open("examples/free.jpg")))
+    list.append(telebot.types.InputMediaPhoto(Image.open("examples/free2.jpg")))
+    bot.send_media_group(message.chat.id,list)
+
 
 
 
