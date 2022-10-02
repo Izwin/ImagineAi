@@ -39,6 +39,7 @@ def premiumFetch(text,message):
 
 
     bot.send_media_group(message.chat.id, list)
+    bot.send_message(message.chat.id,"Отлично! Не забудьте поделиться своими шикарными работами ❤",reply_markup=markup)
 
 def isPromt(text):
     if "Imagine," in text:
@@ -64,7 +65,10 @@ def freeFetch(text, message):
     markup.add(credits, buy_credits, requests, support)
 
     bot.send_media_group(message.chat.id, list)
+    bot.send_message(message.chat.id,"Отлично! Не забудьте поделиться своими шикарными работами ❤",reply_markup=markup)
+
     result.save_images()  # Saves the generated images to 'current working directory/generated', you can also provide a custom path
+
 
 
 @bot.message_handler(commands=['start'])
@@ -81,11 +85,14 @@ def greet(message):
 @bot.message_handler(commands=['imagine'])
 def greet(message):
     global promt
-
+    if message.text == "/imagine" or message.text == "/imagine@imagineai_bot":
+        bot.send_message(message.chat.id, "Запрос должен выглядеть так: /imagine суп который является порталом в другое измерение")
+        return
     text = str(message.text).replace("/imagine, ", "")
     if "@imagineai_bot" in text:
         text = text.replace("@imagineai_bot","")
     print(text)
+
     promt = text
 
     translator = Translator()
