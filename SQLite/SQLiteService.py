@@ -66,7 +66,5 @@ def GetUserByChatId(_conn, _chatId):
         print(e)
 
 
-Conn = CreateConnection("DataBases/database.db")
+Conn = CreateConnection("DataBases/ImagineAI.db")
 CreateTable(Conn)
-_cur = Conn.cursor()
-_cur.execute("DROP TABLE `sqlite_sequence`")
