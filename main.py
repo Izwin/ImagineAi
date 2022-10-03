@@ -65,7 +65,7 @@ channel_id = -1001700593611
 #
 # # bot.send_photo(741168747, open('temp.webp', 'rb'))
 #
-# SQLite.SQLiteService.increaseCredits(-1694667913)
+SQLite.SQLiteService.increaseCredits(-1694667913)
 #
 
 
@@ -168,14 +168,18 @@ def textHandler(message):
         user_credits = SQLite.SQLiteService.GetUserCredits(message.chat.id)
         if user_credits > 0:
             SQLite.SQLiteService.decreaseCredits(message.chat.id)
-            bot.send_message(message.chat.id, REQUEST_SENDED, reply_markup=markup)
-            print(promt)
-            print(message)
-            bot.send_message(analytics, message.from_user.username + " платный запрос " + promt)
+            try:
+                bot.send_message(message.chat.id, REQUEST_SENDED, reply_markup=markup)
+                print(promt)
+                print(message)
+                bot.send_message(analytics, message.from_user.username + " платный запрос " + promt)
 
-            temp = promt
-            promt = ""
-            premiumFetch(temp, message)
+                temp = promt
+                promt = ""
+                premiumFetch(temp, message)
+            except:
+                print("Вернулись")
+                SQLite.SQLiteService.increaseCredits(message.chat.id)
         else:
             bot.send_message(message.chat.id, NO_CREDITS, reply_markup=markup)
 
@@ -194,9 +198,10 @@ def textHandler(message):
     elif message.text == SUPPORT:
         bot.send_message(message.chat.id, SUPPORT_ANS)
 
-    else:
-        if not channel_id == message.chat.id:
 
+    else:
+        print(message.chat.type)
+        if not message.chat.type == "group" and not message.chat.type == "supergroup":
             bot.send_message(message.chat.id, REQUEST_NOT_CORRECT, parse_mode="html")
 
 @bot.message_handler(content_types="photo")
