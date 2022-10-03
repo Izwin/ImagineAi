@@ -26,6 +26,8 @@ def AddUser(_chatId, _credits=1, _userName="unknown"):
     try:
         Conn = CreateConnection("SQLite/DataBases/ImagineDB.db")
         _cur = Conn.cursor()
+        if _userName is None:
+            _userName = "unknown"
         stat = "INSERT OR IGNORE INTO \"Users\"(\"ChatId\",\"Credits\", \"Username\") VALUES (" + str(
             _chatId) + "," + str(
             _credits) + "," + '"' + _userName + '"' + ");"

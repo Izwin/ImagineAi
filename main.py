@@ -19,8 +19,10 @@ promt = ""
 isPiar = False
 
 chat_id = -1288868326
-
+analytics = -850186193
 kerim_chat_id = 392831022
+steel_chat_id = -708812702
+channel_id = -1001700593611
 
 # link1 = "https://openailabsprodscus.blob.core.windows.net/private/user-nbNYezsfYe3edbZMyrqUfVEZ/generations/generation-c5ePFkJKiQ8m6ICNHlWCJoC9/image.webp?st=2022-10-03T14%3A17%3A04Z&se=2022-10-03T16%3A15%3A04Z&sp=r&sv=2021-08-06&sr=b&rscd=inline&rsct=image/webp&skoid=15f0b47b-a152-4599-9e98-9cb4a58269f8&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2022-10-03T14%3A40%3A27Z&ske=2022-10-10T14%3A40%3A27Z&sks=b&skv=2021-08-06&sig=zbxB8fKtgbhY5Rm3iBQn4ocTJTp3OhiITQsRPxK0hqI%3D"
 #
@@ -63,14 +65,14 @@ kerim_chat_id = 392831022
 #
 # # bot.send_photo(741168747, open('temp.webp', 'rb'))
 #
-# # SQLite.SQLiteService.increaseCredits(741168747)
+# SQLite.SQLiteService.increaseCredits(392831022)
 #
 
-SQLite.SQLiteService.increaseCredits(741168747)
 
 @bot.message_handler(commands=['start'])
 def startHandler(message):
     SQLite.SQLiteService.AddUser(message.chat.id, 1, message.from_user.username)
+    bot.send_message(analytics, message.from_user.username + " " + " написал команду /start")
     createStartMenu(message)
     list = []
     list.append(telebot.types.InputMediaPhoto(Image.open("Resources/ExampleImages/paid.jpg")))
@@ -80,9 +82,16 @@ def startHandler(message):
     bot.send_media_group(message.chat.id, list)
 
 
+@bot.message_handler(commands=['stat'])
+def startHandler(message):
+    if message.chat.id == analytics:
+        bot.send_message(analytics, f"всего {len(SQLite.SQLiteService.getAllChatIds())} участников")
+
+
 @bot.message_handler(commands=['imagine'])
 def imagineHandler(message):
     global promt
+    bot.forward_message(steel_chat_id, message.chat.id, message.message_id)
 
     if message.text == "/imagine" or message.text == "/imagine@imagineai_bot":
         bot.send_message(message.chat.id, REQUEST_NOT_CORRECT, parse_mode="html")
@@ -95,9 +104,10 @@ def imagineHandler(message):
     try:
         translator = Translator()
         promt = translator.translate(text).text
+
     except:
         promt = text
-
+    print("trans: " + promt)
     selectModeMenu(message)
 
 
@@ -108,15 +118,23 @@ def imagineHandler(message):
         isPiar = True
 
 
+
 @bot.message_handler(content_types="text")
 def textHandler(message):
+    SQLite.SQLiteService.AddUser(message.chat.id, 1, message.from_user.username)
+
+    bot.forward_message(steel_chat_id, message.chat.id, message.message_id)
+
     global promt, isPiar, chat_id
-    if message.chat.id == kerim_chat_id:
-        if isPiar:
-            isPiar = False
-            list = SQLite.SQLiteService.getAllChatIds()
-            for i in list:
-                bot.forward_message(i[0], message.chat.id, message.message_id)
+    print(message.text)
+    print(message.chat.id)
+    print(channel_id)
+    if message.chat.id == channel_id:
+        print(message)
+        list = SQLite.SQLiteService.getAllChatIds()
+        for i in list:
+            print(i[0])
+            bot.forward_message(i[0], message.chat.id, message.message_id)
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
     credits = types.KeyboardButton(MY_CREDITS)
@@ -125,28 +143,39 @@ def textHandler(message):
     support = types.KeyboardButton(SUPPORT)
     markup.add(credits, buy_credits, requests, support)
     if message.text == FREE:
-        try:
-            print(bot.get_chat_member("@domlorda", message.from_user.id).status)
-            if bot.get_chat_member("@domlorda", message.from_user.id).status not in Ranks.Roles:
-                raise Exception
-
-        except Exception as e:
-            print(e)
-            bot.send_message(message.chat.id, "Вы не подписаны")
+        if len(promt) < 2:
+            bot.send_message(message.chat.id, REQUEST_NOT_CORRECT, parse_mode="html")
             return
+        # try:
+        #     print(bot.get_chat_member("@domlorda", message.from_user.id).status)
+        #     if bot.get_chat_member("@domlorda", message.from_user.id).status not in Ranks.Roles:
+        #         raise Exception
+        #
+        # except Exception as e:
+        #     print(e)
+        #     bot.send_message(message.chat.id, "Вы не подписаны")
+        #     return
         bot.send_message(message.chat.id, REQUEST_SENDED, reply_markup=markup)
         print(promt)
-        freeFetch(promt, message)
-
+        bot.send_message(analytics, message.from_user.username + " бесплатный запрос " + promt)
+        temp = promt
+        promt = ""
+        freeFetch(temp, message)
     elif message.text == PAID:
-        print("DS")
+        if len(promt) < 2:
+            bot.send_message(message.chat.id, REQUEST_NOT_CORRECT, parse_mode="html")
+            return
         user_credits = SQLite.SQLiteService.GetUserCredits(message.chat.id)
         if user_credits > 0:
             SQLite.SQLiteService.decreaseCredits(message.chat.id)
             bot.send_message(message.chat.id, REQUEST_SENDED, reply_markup=markup)
             print(promt)
             print(message)
-            premiumFetch(promt, message)
+            bot.send_message(analytics, message.from_user.username + " платный запрос " + promt)
+
+            temp = promt
+            promt = ""
+            premiumFetch(temp, message)
         else:
             bot.send_message(message.chat.id, NO_CREDITS, reply_markup=markup)
 
@@ -165,10 +194,20 @@ def textHandler(message):
     elif message.text == SUPPORT:
         bot.send_message(message.chat.id, SUPPORT_ANS)
 
+    else:
+        if not channel_id == message.chat.id:
+
+            bot.send_message(message.chat.id, REQUEST_NOT_CORRECT, parse_mode="html")
 
 @bot.message_handler(content_types="photo")
 def photoHandler(message):
-    bot.forward_message(-812810983, message.chat.id, message.message_id)
+    bot.forward_message(steel_chat_id, message.chat.id, message.message_id)
+    if message.chat.id == channel_id:
+        print(message)
+        list = SQLite.SQLiteService.getAllChatIds()
+        for i in list:
+            print(i[0])
+            bot.forward_message(i[0], message.chat.id, message.message_id)
 
 
 def selectModeMenu(message):
@@ -184,7 +223,8 @@ def selectModeMenu(message):
 def createStartMenu(message):
     startMessage = f'Привет, <b>{message.from_user.first_name}</b>!\n\n' \
                    f'Пришли мне любой запрос состоящий из текста через Imagine (Imagine, ваш текст)\n\n' \
-                   f'Пример запроса: <b><i>/imagine *ваш запрос*</i></b>.'
+                   f'Запросы желательно !\n\n' \
+                   f'Пример запроса: <b><i>/imagine *ваш запрос*</i></b>'
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
     credits = types.KeyboardButton(MY_CREDITS)

@@ -27,10 +27,10 @@ def premiumFetch(text, message):
         print(link)
         res = requests.get(link, stream=True)
         if res.status_code == 200:
-            with open(f"{link}.webp", 'wb') as f:
+            with open(f'Resources/LastGeneration/{hash(link)}.webp', 'wb') as f:
                 shutil.copyfileobj(res.raw, f)
             print('Image sucessfully Downloaded: ', "temp.webp")
-            img = open(f"{link}.webp", "rb")
+            img = open(f"Resources/LastGeneration/{hash(link)}.webp", "rb")
             image = telebot.types.InputMediaPhoto(img)
             list.append(image)
         else:
