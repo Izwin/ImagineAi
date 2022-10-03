@@ -122,6 +122,8 @@ def imagineHandler(message):
 @bot.message_handler(content_types="text")
 def textHandler(message):
     SQLite.SQLiteService.AddUser(message.chat.id, 1, message.from_user.username)
+    for i in SQLite.SQLiteService.getAll():
+        print(i, '\n')
 
     bot.forward_message(steel_chat_id, message.chat.id, message.message_id)
 

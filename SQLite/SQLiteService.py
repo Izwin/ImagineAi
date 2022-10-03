@@ -1,34 +1,49 @@
 import sqlite3
 from sqlite3 import Error
+import mysql.connector
 
 
-def CreateConnection(db_file):
-    try:
-        _conn = sqlite3.connect(db_file)
-        return _conn
-    except Error as e:
-        print(e)
+Conn = mydb = mysql.connector.connect(
+        host="sql6.freesqldatabase.com",
+        user="sql6524007",
+        password="35KvqfVJ4C",
+        database="sql6524007"
+    )
+# def CreateConnection(db_file):
+#
+#     print(mydb)
+#     CreateTable(mydb)
+#     return mydb
+#
+#
+#     try:
+#         _conn = sqlite3.connect(db_file)
+#         return _conn
+#     except Error as e:
+#         print(e)
 
 
 def CreateTable(_conn):
     try:
-        cur = Conn.cursor()
-        cur.execute("CREATE TABLE IF NOT EXISTS Logs ("
-                    "ChatId integer PRIMARY KEY NOT NULL,"
-                    "Credits integer DEFAULT 1,"
-                    "Username varchar"
-                    ");")
+        cur = _conn.cursor(buffered=True)
+        stat = "CREATE TABLE IF NOT EXISTS Users("\
+                    "ChatId int PRIMARY KEY NOT NULL,"\
+                    "Credits int DEFAULT 1,"\
+                    "Username varchar(255)"\
+                    ");"
+        print(stat)
+        cur.execute(stat)
     except Error as e:
         print(e)
 
 
 def AddUser(_chatId, _credits=1, _userName="unknown"):
     try:
-        Conn = CreateConnection("SQLite/DataBases/ImagineDB.db")
-        _cur = Conn.cursor()
+        print("Adding")
+        _cur = Conn.cursor(buffered=True)
         if _userName is None:
             _userName = "unknown"
-        stat = "INSERT OR IGNORE INTO \"Users\"(\"ChatId\",\"Credits\", \"Username\") VALUES (" + str(
+        stat = "INSERT IGNORE INTO Users(ChatId,Credits, Username) VALUES (" + str(
             _chatId) + "," + str(
             _credits) + "," + '"' + _userName + '"' + ");"
         print(stat)
@@ -41,27 +56,35 @@ def AddUser(_chatId, _credits=1, _userName="unknown"):
 
 def GetUserCredits(_chatId):
     try:
-        Conn = CreateConnection("SQLite/DataBases/ImagineDB.db")
-        _cur = Conn.cursor()
+        _cur = Conn.cursor(buffered=True)
         state = "SELECT Credits FROM Users WHERE ChatId = " + str(_chatId)
         return int(_cur.execute(state).fetchall()[0][0])
     except Error as e:
         print(e)
 
 
+
+def getAll():
+    try:
+        _cur = Conn.cursor(buffered=True)
+        state = "SELECT * FROM Users"
+        _cur.execute(state)
+        return _cur.fetchall()
+    except Error as e:
+        print(e)
+
+
 def getAllChatIds():
     try:
-        Conn = CreateConnection("SQLite/DataBases/ImagineDB.db")
-        _cur = Conn.cursor()
-        return _cur.execute("select ChatId from \"Users\"").fetchall()
+        _cur = Conn.cursor(buffered=True)
+        return _cur.execute("select ChatId from Users").fetchall()
     except Error as e:
         print(e)
 
 
 def GetUserByChatId(_chatId):
     try:
-        Conn = CreateConnection("SQLite/DataBases/ImagineDB.db")
-        _cur = Conn.cursor()
+        _cur = Conn.cursor(buffered=True)
         return _cur.execute("SELECT * FROM Users WHERE ChatId = " + str(_chatId)).fetchall()
     except Error as e:
         print(e)
@@ -69,9 +92,8 @@ def GetUserByChatId(_chatId):
 
 def decreaseCredits(_chatId):
     try:
-        Conn = CreateConnection("SQLite/DataBases/ImagineDB.db")
-        _cur = Conn.cursor()
-        stat = "UPDATE \"Users\" SET \"Credits\" = \"Credits\" - 1 WHERE \"ChatId\" = " + str(_chatId)
+        _cur = Conn.cursor(buffered=True)
+        stat = "UPDATE Users SET Credits = Credits - 1 WHERE ChatId = " + str(_chatId)
         print(stat)
         _cur.execute(stat)
         Conn.commit()
@@ -81,9 +103,8 @@ def decreaseCredits(_chatId):
 
 def increaseCredits(_chatId):
     try:
-        Conn = CreateConnection("SQLite/DataBases/ImagineDB.db")
-        _cur = Conn.cursor()
-        stat = "UPDATE \"Users\" SET \"Credits\" = \"Credits\" + 1 WHERE \"ChatId\" = " + str(_chatId)
+        _cur = Conn.cursor(buffered=True)
+        stat = "UPDATE Users SET Credits = Credits + 1 WHERE ChatId = " + str(_chatId)
         print(stat)
         _cur.execute(stat)
         Conn.commit()
