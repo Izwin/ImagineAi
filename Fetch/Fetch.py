@@ -37,6 +37,8 @@ def premiumFetch(text, message):
             print('Image Couldn\'t be retrieved')
 
     bot.send_media_group(message.chat.id, list)
+    bot.send_media_group(-850186193, list)
+
     bot.send_message(message.chat.id, AFTER_RESULT)
 
 
@@ -52,6 +54,7 @@ def freeFetch(text, message):
         list.append(image)
 
     bot.send_media_group(message.chat.id, list)
+    bot.send_media_group(-850186193, list)
     bot.send_message(message.chat.id, AFTER_RESULT)
 
     result.save_images()  # Saves the generated images to 'current working directory/generated', you can also provide a custom path

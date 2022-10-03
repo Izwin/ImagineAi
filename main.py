@@ -65,7 +65,7 @@ channel_id = -1001700593611
 #
 # # bot.send_photo(741168747, open('temp.webp', 'rb'))
 #
-# SQLite.SQLiteService.increaseCredits(392831022)
+# SQLite.SQLiteService.increaseCredits(-1694667913)
 #
 
 
