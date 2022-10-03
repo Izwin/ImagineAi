@@ -1,17 +1,17 @@
-import base64
+import shutil
+import urllib
+
+import requests
 from googletrans import Translator
-from dalle2 import Dalle2
 import telebot
 from telebot import types
-from urlextract import URLExtract
 from PIL import Image
-import urllib.request
 
 from Fetch.Fetch import freeFetch, premiumFetch
-from Utill.UrlExtractor import *
-from Constants.constansts import *
-from craiyon import Craiyon
+from Resources.Constants import Ranks
+from Resources.Constants.ConstantMessages import *
 import SQLite.SQLiteService
+
 bot = telebot.TeleBot(API_KEY)
 
 promt = ""
@@ -22,11 +22,55 @@ chat_id = -1288868326
 
 kerim_chat_id = 392831022
 
+# link1 = "https://openailabsprodscus.blob.core.windows.net/private/user-nbNYezsfYe3edbZMyrqUfVEZ/generations/generation-c5ePFkJKiQ8m6ICNHlWCJoC9/image.webp?st=2022-10-03T14%3A17%3A04Z&se=2022-10-03T16%3A15%3A04Z&sp=r&sv=2021-08-06&sr=b&rscd=inline&rsct=image/webp&skoid=15f0b47b-a152-4599-9e98-9cb4a58269f8&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2022-10-03T14%3A40%3A27Z&ske=2022-10-10T14%3A40%3A27Z&sks=b&skv=2021-08-06&sig=zbxB8fKtgbhY5Rm3iBQn4ocTJTp3OhiITQsRPxK0hqI%3D"
+#
+# list = []
+# list1 = []
+#
+# list1.append(link1)
+# list1.append(link1)
+#
+# # res = requests.get(link, stream = True)
+# # if res.status_code == 200:
+# #     with open("temp.webp",'wb') as f:
+# #         shutil.copyfileobj(res.raw, f)
+# #     print('Image sucessfully Downloaded: ',"temp.webp")
+# # else:
+# #     print('Image Couldn\'t be retrieved')
+#
+# #SQLite.SQLiteService.increaseCredits(741168747)
+#
+# for link in list1:
+#     print(link)
+#     res = requests.get(link, stream=True)
+#     if res.status_code == 200:
+#         with open("temp.webp", 'wb') as f:
+#             shutil.copyfileobj(res.raw, f)
+#         print('Image sucessfully Downloaded: ', "temp.webp")
+#         img = open("temp.webp", "rb")
+#         image = telebot.types.InputMediaPhoto(img)
+#         list.append(image)
+#     else:
+#         print('Image Couldn\'t be retrieved')
+#
+#
+# bot.send_media_group(741168747, list)
+# bot.send_message(741168747, AFTER_RESULT)
+#
+#
+#
+# # bot.send_photo(741168747, open('C:\\Users\\zaman\\Desktop\\image1.webp', 'rb'))
+#
+# # bot.send_photo(741168747, open('temp.webp', 'rb'))
+#
+# # SQLite.SQLiteService.increaseCredits(741168747)
+#
+
+SQLite.SQLiteService.increaseCredits(741168747)
+
 @bot.message_handler(commands=['start'])
 def startHandler(message):
-
-
-    SQLite.SQLiteService.AddUser(message.chat.id,1,message.from_user.username)
+    SQLite.SQLiteService.AddUser(message.chat.id, 1, message.from_user.username)
     createStartMenu(message)
     list = []
     list.append(telebot.types.InputMediaPhoto(Image.open("Resources/ExampleImages/paid.jpg")))
@@ -48,30 +92,31 @@ def imagineHandler(message):
     if "@imagineai_bot" in text:
         text = text.replace("@imagineai_bot", "")
 
-    translator = Translator()
-    promt = translator.translate(text).text
+    try:
+        translator = Translator()
+        promt = translator.translate(text).text
+    except:
+        promt = text
 
     selectModeMenu(message)
 
 
-
 @bot.message_handler(commands=['piar'])
 def imagineHandler(message):
-    global promt,isPiar
+    global promt, isPiar
     if message.chat.id == kerim_chat_id:
         isPiar = True
 
 
-
 @bot.message_handler(content_types="text")
 def textHandler(message):
-    global promt,isPiar,chat_id
+    global promt, isPiar, chat_id
     if message.chat.id == kerim_chat_id:
         if isPiar:
             isPiar = False
             list = SQLite.SQLiteService.getAllChatIds()
             for i in list:
-                bot.forward_message(i[0],message.chat.id,message.message_id)
+                bot.forward_message(i[0], message.chat.id, message.message_id)
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
     credits = types.KeyboardButton(MY_CREDITS)
@@ -81,23 +126,24 @@ def textHandler(message):
     markup.add(credits, buy_credits, requests, support)
     if message.text == FREE:
         try:
-            bot.get_chat_member("-1288868326",message.from_user.id)
-
+            print(bot.get_chat_member("@domlorda", message.from_user.id).status)
+            if bot.get_chat_member("@domlorda", message.from_user.id).status not in Ranks.Roles:
+                raise Exception
 
         except Exception as e:
             print(e)
-            bot.send_message(message.chat.id,"Вы не подписаны")
+            bot.send_message(message.chat.id, "Вы не подписаны")
             return
-        bot.send_message(message.chat.id, REQUEST_SENDED,reply_markup=markup)
+        bot.send_message(message.chat.id, REQUEST_SENDED, reply_markup=markup)
         print(promt)
         freeFetch(promt, message)
 
     elif message.text == PAID:
         print("DS")
         user_credits = SQLite.SQLiteService.GetUserCredits(message.chat.id)
-        if user_credits>0:
+        if user_credits > 0:
             SQLite.SQLiteService.decreaseCredits(message.chat.id)
-            bot.send_message(message.chat.id, REQUEST_SENDED,reply_markup=markup)
+            bot.send_message(message.chat.id, REQUEST_SENDED, reply_markup=markup)
             print(promt)
             print(message)
             premiumFetch(promt, message)
@@ -106,7 +152,7 @@ def textHandler(message):
 
 
     elif message.text == EXAMPLES_PROMTS:
-        f = open("Constants/requirements.txt", "r", encoding="utf-8")
+        f = open("Resources/Constants/Prompts.txt", "r", encoding="utf-8")
         bot.send_message(message.chat.id, f.read(), parse_mode="html")
 
     elif message.text == MY_CREDITS:
@@ -118,7 +164,6 @@ def textHandler(message):
 
     elif message.text == SUPPORT:
         bot.send_message(message.chat.id, SUPPORT_ANS)
-
 
 
 @bot.message_handler(content_types="photo")
@@ -150,5 +195,5 @@ def createStartMenu(message):
     bot.send_message(message.chat.id, startMessage, reply_markup=markup, parse_mode="html")
 
 
-print("st0art")
+print("start")
 bot.infinity_polling()
