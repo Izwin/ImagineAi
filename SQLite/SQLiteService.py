@@ -4,10 +4,10 @@ import mysql.connector
 
 
 Conn = mydb = mysql.connector.connect(
-        host="sql6.freesqldatabase.com",
-        user="sql6524007",
-        password="35KvqfVJ4C",
-        database="sql6524007"
+        host="bgqbgvhtkl5ebugndbag-mysql.services.clever-cloud.com",
+        user="uikvsb6zrtvrgmqc",
+        password="k6HKrlPgbn5gUxCRjL8i",
+        database="bgqbgvhtkl5ebugndbag"
     )
 
 
@@ -40,7 +40,7 @@ def CreateTable(_conn):
     except Error as e:
         print(e)
 
-
+CreateTable(Conn)
 def AddUser(_chatId, _credits=1, _userName="unknown"):
     try:
         print("Adding")
