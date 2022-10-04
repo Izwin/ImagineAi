@@ -13,7 +13,7 @@ from Utill.UrlExtractor import *
 bot = telebot.TeleBot(API_KEY)
 
 
-async def premiumFetch(text, message):
+def premiumFetch(text, message):
     dalle = Dalle2(DALLE_SESS)
 
     generations = dalle.generate(text)
@@ -41,13 +41,13 @@ async def premiumFetch(text, message):
             image = telebot.types.InputMediaPhoto(img)
             list2.append(image)
 
-    await bot.send_media_group(message.chat.id, list)
-    await bot.send_media_group(-850186193, list2)
+    bot.send_media_group(message.chat.id, list)
+    bot.send_media_group(-850186193, list2)
 
-    await bot.send_message(message.chat.id, AFTER_RESULT)
+    bot.send_message(message.chat.id, AFTER_RESULT)
 
 
-async def freeFetch(text, message):
+def freeFetch(text, message):
     print("freeFetch")
     generator = Craiyon()  # Instantiates the api wrapper
     result = generator.generate(text)
@@ -57,8 +57,8 @@ async def freeFetch(text, message):
         image = telebot.types.InputMediaPhoto(base64.decodebytes(i.encode("utf-8")))
         list.append(image)
 
-    await bot.send_media_group(message.chat.id, list)
-    await bot.send_media_group(-850186193, list)
-    await bot.send_message(message.chat.id, AFTER_RESULT)
+    bot.send_media_group(message.chat.id, list)
+    bot.send_media_group(-850186193, list)
+    bot.send_message(message.chat.id, AFTER_RESULT)
 
     result.save_images()  # Saves the generated images to 'current working directory/generated', you can also provide a custom path

@@ -2,19 +2,9 @@ import sqlite3
 from sqlite3 import Error, OperationalError
 import mysql.connector
 
-ConnForAdd = mysql.connector.connect(
-    host="bgqbgvhtkl5ebugndbag-mysql.services.clever-cloud.com",
-    user="uikvsb6zrtvrgmqc",
-    password="k6HKrlPgbn5gUxCRjL8i",
-    database="bgqbgvhtkl5ebugndbag"
-)
 
-ConnForChatId = mydb = mysql.connector.connect(
-    host="bgqbgvhtkl5ebugndbag-mysql.services.clever-cloud.com",
-    user="uikvsb6zrtvrgmqc",
-    password="k6HKrlPgbn5gUxCRjL8i",
-    database="bgqbgvhtkl5ebugndbag"
-)
+
+
 # def CreateConnection(db_file):
 #
 #     print(mydb)
@@ -55,7 +45,13 @@ def AddUser(_chatId, _credits=1, _userName="unknown"):
 
     try:
         print("Adding")
-        _cur = ConnForAdd .cursor()
+        ConnForAdd = mysql.connector.connect(
+            host="bgqbgvhtkl5ebugndbag-mysql.services.clever-cloud.com",
+            user="uikvsb6zrtvrgmqc",
+            password="k6HKrlPgbn5gUxCRjL8i",
+            database="bgqbgvhtkl5ebugndbag"
+        )
+        _cur = ConnForAdd.cursor()
         if _userName is None:
             _userName = "unknown"
 
@@ -72,7 +68,7 @@ def AddUser(_chatId, _credits=1, _userName="unknown"):
                 _credits) + "," + '"' + _userName + '"' + ");"
             print(stat)
             _cur.execute(stat)
-            Conn.commit()
+            ConnForAdd.commit()
 
 
     except Error as e:
@@ -118,8 +114,12 @@ def getAll():
 
 
 def getAllChatIds():
-
-
+    ConnForChatId = mydb = mysql.connector.connect(
+        host="bgqbgvhtkl5ebugndbag-mysql.services.clever-cloud.com",
+        user="uikvsb6zrtvrgmqc",
+        password="k6HKrlPgbn5gUxCRjL8i",
+        database="bgqbgvhtkl5ebugndbag"
+    )
     try:
         _cur = ConnForChatId.cursor(buffered=True)
         _cur.execute("select ChatId from Users")

@@ -6,6 +6,7 @@ import requests
 from googletrans import Translator
 import telebot
 from telebot.async_telebot import AsyncTeleBot
+import telebot.asyncio_filters
 from telebot import types
 from PIL import Image
 import logging
@@ -15,7 +16,7 @@ from Resources.Constants import Ranks
 from Resources.Constants.ConstantMessages import *
 import SQLite.SQLiteService
 
-bot = AsyncTeleBot(API_KEY)
+bot = telebot.TeleBot(API_KEY)
 
 promt = ""
 
@@ -73,31 +74,31 @@ channel_id = -1001700593611
 
 
 @bot.message_handler(commands=['start'])
-async def startHandler(message):
+def startHandler(message):
     SQLite.SQLiteService.AddUser(message.chat.id, 1, message.from_user.username)
-    await bot.send_message(analytics, message.from_user.username + " " + " написал команду /start")
-    await createStartMenu(message)
+    bot.send_message(analytics, message.from_user.username + " " + " написал команду /start")
+    createStartMenu(message)
     list = []
     list.append(telebot.types.InputMediaPhoto(Image.open("Resources/ExampleImages/paid.jpg")))
     list.append(telebot.types.InputMediaPhoto(Image.open("Resources/ExampleImages/paid2.jpg")))
     list.append(telebot.types.InputMediaPhoto(Image.open("Resources/ExampleImages/free.jpg")))
     list.append(telebot.types.InputMediaPhoto(Image.open("Resources/ExampleImages/free2.jpg")))
-    await bot.send_media_group(message.chat.id, list)
+    bot.send_media_group(message.chat.id, list)
 
 
 @bot.message_handler(commands=['stat'])
-async def startHandler(message):
+def startHandler(message):
     if message.chat.id == analytics:
-        await bot.send_message(analytics, f"всего {len(SQLite.SQLiteService.getAllChatIds())} участников", timeout=1)
+        bot.send_message(analytics, f"всего {len(SQLite.SQLiteService.getAllChatIds())} участников", timeout=1)
 
 
 @bot.message_handler(commands=['imagine'])
-async def imagineHandler(message):
+def imagineHandler(message):
     global promt
-    await bot.forward_message(steel_chat_id, message.chat.id, message.message_id)
+    bot.forward_message(steel_chat_id, message.chat.id, message.message_id)
 
     if message.text == "/imagine" or message.text == "/imagine@imagineai_bot":
-        await bot.send_message(message.chat.id, REQUEST_NOT_CORRECT, parse_mode="html")
+        bot.send_message(message.chat.id, REQUEST_NOT_CORRECT, parse_mode="html")
         return
     text = str(message.text).replace("/imagine ", "")
 
@@ -111,7 +112,7 @@ async def imagineHandler(message):
     except:
         promt = text
     print("trans: " + promt)
-    await selectModeMenu(message)
+    selectModeMenu(message)
 
 
 @bot.message_handler(commands=['piar'])
@@ -123,10 +124,11 @@ def imagineHandler(message):
 
 
 @bot.message_handler(content_types="text")
-async def textHandler(message):
+def textHandler(message):
+    print("sd")
     SQLite.SQLiteService.AddUser(message.chat.id, 1, message.from_user.username)
 
-    await bot.forward_message(steel_chat_id, message.chat.id, message.message_id)
+    bot.forward_message(steel_chat_id, message.chat.id, message.message_id)
 
     global promt, isPiar, chat_id
     if message.chat.id == channel_id:
@@ -143,7 +145,7 @@ async def textHandler(message):
     markup.add(credits, buy_credits, requests, support)
     if message.text == FREE:
         if len(promt) < 2:
-            await bot.send_message(message.chat.id, REQUEST_NOT_CORRECT, parse_mode="html")
+            bot.send_message(message.chat.id, REQUEST_NOT_CORRECT, parse_mode="html")
             return
         # try:
         #     print(bot.get_chat_member("@domlorda", message.from_user.id).status)
@@ -154,46 +156,46 @@ async def textHandler(message):
         #     print(e)
         #     bot.send_message(message.chat.id, "Вы не подписаны")
         #     return
-        await bot.send_message(message.chat.id, REQUEST_SENDED, reply_markup=markup)
-        await bot.send_message(analytics, message.from_user.username + " бесплатный запрос " + promt)
+        bot.send_message(message.chat.id, REQUEST_SENDED, reply_markup=markup)
+        bot.send_message(analytics, message.from_user.username + " бесплатный запрос " + promt)
         temp = promt
         promt = ""
         freeFetch(temp, message)
     elif message.text == PAID:
         if len(promt) < 2:
-            await bot.send_message(message.chat.id, REQUEST_NOT_CORRECT, parse_mode="html")
+            bot.send_message(message.chat.id, REQUEST_NOT_CORRECT, parse_mode="html")
             return
         user_credits = SQLite.SQLiteService.GetUserCredits(message.chat.id)
         if user_credits > 0:
             SQLite.SQLiteService.decreaseCredits(message.chat.id)
-            await bot.send_message(message.chat.id, REQUEST_SENDED, reply_markup=markup)
-            await bot.send_message(analytics, message.from_user.username + " платный запрос " + promt)
+            bot.send_message(message.chat.id, REQUEST_SENDED, reply_markup=markup)
+            bot.send_message(analytics, message.from_user.username + " платный запрос " + promt)
 
             temp = promt
             promt = ""
             premiumFetch(temp, message)
         else:
-            await bot.send_message(message.chat.id, NO_CREDITS, reply_markup=markup)
+            bot.send_message(message.chat.id, NO_CREDITS, reply_markup=markup)
 
 
     elif message.text == EXAMPLES_PROMTS:
         f = open("Resources/Constants/Prompts.txt", "r", encoding="utf-8")
-        await bot.send_message(message.chat.id, f.read(), parse_mode="html")
+        bot.send_message(message.chat.id, f.read(), parse_mode="html")
 
     elif message.text == MY_CREDITS:
         user_credits = SQLite.SQLiteService.GetUserCredits(message.chat.id)
-        await bot.send_message(message.chat.id, "У вас " + str(user_credits) + " кредитов")
+        bot.send_message(message.chat.id, "У вас " + str(user_credits) + " кредитов")
 
     elif message.text == BUY_CREDITS:
-        await bot.send_message(message.chat.id, BUY_CREDITS_ANS)
+        bot.send_message(message.chat.id, BUY_CREDITS_ANS)
 
     elif message.text == SUPPORT:
-        await bot.send_message(message.chat.id, SUPPORT_ANS)
+        bot.send_message(message.chat.id, SUPPORT_ANS)
 
     else:
         if not channel_id == message.chat.id:
 
-            await bot.send_message(message.chat.id, REQUEST_NOT_CORRECT, parse_mode="html")
+            bot.send_message(message.chat.id, REQUEST_NOT_CORRECT, parse_mode="html")
 
 @bot.message_handler(content_types="photo")
 def photoHandler(message):
@@ -208,17 +210,17 @@ def photoHandler(message):
                 print("Ошибка репоста " + str(i[0]))
 
 
-async def selectModeMenu(message):
+def selectModeMenu(message):
     print("createMenu")
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     free = types.KeyboardButton(FREE)
     paid = types.KeyboardButton(PAID)
     markup.add(free)
     markup.add(paid)
-    await bot.send_message(message.chat.id, text="Выберите способ", reply_markup=markup)
+    bot.send_message(message.chat.id, text="Выберите способ", reply_markup=markup)
 
 
-async def createStartMenu(message):
+def createStartMenu(message):
     startMessage = f'Привет, <b>{message.from_user.first_name}</b>!\n\n' \
                    f'Пришли мне любой запрос состоящий из текста через Imagine (Imagine, ваш текст)\n\n' \
                    f'Запросы желательно !\n\n' \
@@ -230,10 +232,18 @@ async def createStartMenu(message):
     requests = types.KeyboardButton(EXAMPLES_PROMTS)
     support = types.KeyboardButton(SUPPORT)
     markup.add(credits, buy_credits, requests, support)
-    await bot.send_message(message.chat.id, startMessage, reply_markup=markup, parse_mode="html")
+    bot.send_message(message.chat.id, startMessage, reply_markup=markup, parse_mode="html")
 
 
 print("start")
+def update_listener(messages):
+    for message in messages:
+        print(message)
+        if message.text == "ff":
+            bot.send_message(message.chat.id, 'Hello!')
 
-asyncio.run(bot.polling(non_stop=True))
+bot.set_update_listener(update_listener)
+
+
+bot.polling()
 
