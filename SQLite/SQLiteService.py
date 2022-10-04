@@ -34,7 +34,6 @@ def CreateTable(_conn):
                     "Credits int DEFAULT 1,"\
                     "Username varchar(255)"\
                     ");"
-        print(stat)
         cur.execute(stat)
         cur.close()
     except Error as e:
@@ -44,7 +43,6 @@ def CreateTable(_conn):
 def AddUser(_chatId, _credits=1, _userName="unknown"):
 
     try:
-        print("Adding")
         ConnForAdd = mysql.connector.connect(
             host="bgqbgvhtkl5ebugndbag-mysql.services.clever-cloud.com",
             user="uikvsb6zrtvrgmqc",
@@ -56,17 +54,14 @@ def AddUser(_chatId, _credits=1, _userName="unknown"):
             _userName = "unknown"
 
         stat = "SELECT * FROM Users WHERE ChatId = " + str(_chatId)
-        print(stat)
         _cur.execute(stat)
         try:
-            print(_cur.fetchall()[0][0])
             print("Не добавил")
         except:
             print("Добваил")
             stat = "INSERT IGNORE INTO Users(ChatId,Credits, Username) VALUES (" + str(
                 _chatId) + "," + str(
                 _credits) + "," + '"' + _userName + '"' + ");"
-            print(stat)
             _cur.execute(stat)
             ConnForAdd.commit()
 
@@ -86,7 +81,6 @@ def GetUserCredits(_chatId):
     try:
         _cur = Conn.cursor(buffered=True)
         state = "SELECT Credits FROM Users WHERE ChatId = " + str(_chatId)
-        print(state)
         _cur.execute(state)
         _cur.close()
         return int(_cur.fetchall()[0][0])
@@ -156,7 +150,6 @@ def decreaseCredits(_chatId):
     try:
         _cur = Conn.cursor(buffered=True)
         stat = "UPDATE Users SET Credits = Credits - 1 WHERE ChatId = " + str(_chatId)
-        print(stat)
         _cur.execute(stat)
         Conn.commit()
         _cur.close()
@@ -175,7 +168,6 @@ def increaseCredits(_chatId):
     try:
         _cur = Conn.cursor(buffered=True)
         stat = "UPDATE Users SET Credits = Credits + 1 WHERE ChatId = " + str(_chatId)
-        print(stat)
         _cur.execute(stat)
         Conn.commit()
         _cur.close()

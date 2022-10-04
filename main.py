@@ -28,6 +28,7 @@ kerim_chat_id = 392831022
 steel_chat_id = -708812702
 channel_id = -1001700593611
 
+
 # link1 = "https://openailabsprodscus.blob.core.windows.net/private/user-nbNYezsfYe3edbZMyrqUfVEZ/generations/generation-c5ePFkJKiQ8m6ICNHlWCJoC9/image.webp?st=2022-10-03T14%3A17%3A04Z&se=2022-10-03T16%3A15%3A04Z&sp=r&sv=2021-08-06&sr=b&rscd=inline&rsct=image/webp&skoid=15f0b47b-a152-4599-9e98-9cb4a58269f8&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2022-10-03T14%3A40%3A27Z&ske=2022-10-10T14%3A40%3A27Z&sks=b&skv=2021-08-06&sig=zbxB8fKtgbhY5Rm3iBQn4ocTJTp3OhiITQsRPxK0hqI%3D"
 #
 # list = []
@@ -111,7 +112,6 @@ def imagineHandler(message):
 
     except:
         promt = text
-    print("trans: " + promt)
     selectModeMenu(message)
 
 
@@ -122,19 +122,18 @@ def imagineHandler(message):
         isPiar = True
 
 
-
 @bot.message_handler(content_types="text")
 def textHandler(message):
-    print("sd")
     SQLite.SQLiteService.AddUser(message.chat.id, 1, message.from_user.username)
-
-    bot.forward_message(steel_chat_id, message.chat.id, message.message_id)
+    try:
+        bot.forward_message(steel_chat_id, message.chat.id, message.message_id)
+    except:
+        print("Forward Error")
 
     global promt, isPiar, chat_id
     if message.chat.id == channel_id:
         list = SQLite.SQLiteService.getAllChatIds()
         for i in list:
-            print(i[0])
             bot.forward_message(i[0], message.chat.id, message.message_id)
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
@@ -197,21 +196,20 @@ def textHandler(message):
             if not message.chat.type == "group" and not message.chat.type == "supergroup":
                 bot.send_message(message.chat.id, REQUEST_NOT_CORRECT, parse_mode="html")
 
+
 @bot.message_handler(content_types="photo")
 def photoHandler(message):
     bot.forward_message(steel_chat_id, message.chat.id, message.message_id)
     if message.chat.id == channel_id:
         list = SQLite.SQLiteService.getAllChatIds()
         for i in list:
-            print(i[0])
             try:
                 bot.forward_message(i[0], message.chat.id, message.message_id)
             except Exception as e:
-                print("Ошибка репоста " + str(i[0]))
+                print(e)
 
 
 def selectModeMenu(message):
-    print("createMenu")
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     free = types.KeyboardButton(FREE)
     paid = types.KeyboardButton(PAID)
@@ -235,15 +233,12 @@ def createStartMenu(message):
     bot.send_message(message.chat.id, startMessage, reply_markup=markup, parse_mode="html")
 
 
-print("start")
 def update_listener(messages):
     for message in messages:
-        print(message)
         if message.text == "ff":
             bot.send_message(message.chat.id, 'Hello!')
 
+
 bot.set_update_listener(update_listener)
 
-
 bot.polling()
-

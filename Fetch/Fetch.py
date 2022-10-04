@@ -29,13 +29,11 @@ def premiumFetch(text, message):
             with open(f'Resources/LastGeneration/{hash(link)}.webp', 'wb') as f:
                 shutil.copyfileobj(res.raw, f)
 
-                print('Image sucessfully Downloaded: ', "temp.webp")
                 img = open(f"Resources/LastGeneration/{hash(link)}.webp", "rb")
                 image = telebot.types.InputMediaPhoto(img)
                 list.append(image)
         else:
-            print('Image Couldn\'t be retrieved')
-
+            print("Dalle Image Download Failed")
         with urllib.request.urlopen(link) as url:
             img = Image.open(url)
             image = telebot.types.InputMediaPhoto(img)
@@ -48,7 +46,6 @@ def premiumFetch(text, message):
 
 
 def freeFetch(text, message):
-    print("freeFetch")
     generator = Craiyon()  # Instantiates the api wrapper
     result = generator.generate(text)
     images = result.images  # A list containing image data as base64 encoded strings
