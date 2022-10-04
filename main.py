@@ -194,8 +194,8 @@ def textHandler(message):
 
     else:
         if not channel_id == message.chat.id:
-
-            bot.send_message(message.chat.id, REQUEST_NOT_CORRECT, parse_mode="html")
+            if not message.chat.type == "group" and not message.chat.type == "supergroup":
+                bot.send_message(message.chat.id, REQUEST_NOT_CORRECT, parse_mode="html")
 
 @bot.message_handler(content_types="photo")
 def photoHandler(message):
