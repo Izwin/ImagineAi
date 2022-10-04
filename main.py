@@ -102,6 +102,7 @@ def imagineHandler(message):
         text = text.replace("@imagineai_bot", "")
 
     try:
+        print(text)
         translator = Translator()
         promt = translator.translate(text).text
 
