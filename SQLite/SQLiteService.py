@@ -9,6 +9,9 @@ Conn = mydb = mysql.connector.connect(
         password="35KvqfVJ4C",
         database="sql6524007"
     )
+Conn.reconnect()
+
+
 # def CreateConnection(db_file):
 #
 #     print(mydb)
