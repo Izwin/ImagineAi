@@ -210,7 +210,7 @@ def photoHandler(message):
             try:
                 bot.forward_message(i[0], message.chat.id, message.message_id)
             except Exception as e:
-                print("Ошибка репоста " + i[0])
+                print("Ошибка репоста " + str(i[0]))
 
 
 def selectModeMenu(message):
