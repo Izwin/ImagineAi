@@ -207,7 +207,10 @@ def photoHandler(message):
         list = SQLite.SQLiteService.getAllChatIds()
         for i in list:
             print(i[0])
-            bot.forward_message(i[0], message.chat.id, message.message_id)
+            try:
+                bot.forward_message(i[0], message.chat.id, message.message_id)
+            except Exception as e:
+                print("Ошибка репоста " + i[0])
 
 
 def selectModeMenu(message):
