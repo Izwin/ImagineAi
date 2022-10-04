@@ -65,7 +65,7 @@ channel_id = -1001700593611
 #
 # # bot.send_photo(741168747, open('temp.webp', 'rb'))
 #
-SQLite.SQLiteService.increaseCredits(-1694667913)
+# SQLite.SQLiteService.increaseCredits(-1694667913)
 #
 
 
@@ -102,12 +102,10 @@ def imagineHandler(message):
         text = text.replace("@imagineai_bot", "")
 
     try:
-        print(text)
         translator = Translator()
         promt = translator.translate(text).text
 
-    except Exception as e:
-        print(e)
+    except:
         promt = text
     print("trans: " + promt)
     selectModeMenu(message)
@@ -125,14 +123,17 @@ def imagineHandler(message):
 def textHandler(message):
     SQLite.SQLiteService.AddUser(message.chat.id, 1, message.from_user.username)
 
-
     bot.forward_message(steel_chat_id, message.chat.id, message.message_id)
 
     global promt, isPiar, chat_id
+    print(message.text)
+    print(message.chat.id)
+    print(channel_id)
     if message.chat.id == channel_id:
         print(message)
         list = SQLite.SQLiteService.getAllChatIds()
         for i in list:
+            print(i[0])
             bot.forward_message(i[0], message.chat.id, message.message_id)
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
@@ -155,6 +156,7 @@ def textHandler(message):
         #     bot.send_message(message.chat.id, "Вы не подписаны")
         #     return
         bot.send_message(message.chat.id, REQUEST_SENDED, reply_markup=markup)
+        print(promt)
         bot.send_message(analytics, message.from_user.username + " бесплатный запрос " + promt)
         temp = promt
         promt = ""
@@ -166,15 +168,14 @@ def textHandler(message):
         user_credits = SQLite.SQLiteService.GetUserCredits(message.chat.id)
         if user_credits > 0:
             SQLite.SQLiteService.decreaseCredits(message.chat.id)
-            try:
-                bot.send_message(message.chat.id, REQUEST_SENDED, reply_markup=markup)
-                bot.send_message(analytics, message.from_user.username + " платный запрос " + promt)
+            bot.send_message(message.chat.id, REQUEST_SENDED, reply_markup=markup)
+            print(promt)
+            print(message)
+            bot.send_message(analytics, message.from_user.username + " платный запрос " + promt)
 
-                temp = promt
-                promt = ""
-                premiumFetch(temp, message)
-            except:
-                SQLite.SQLiteService.increaseCredits(message.chat.id)
+            temp = promt
+            promt = ""
+            premiumFetch(temp, message)
         else:
             bot.send_message(message.chat.id, NO_CREDITS, reply_markup=markup)
 
@@ -193,21 +194,24 @@ def textHandler(message):
     elif message.text == SUPPORT:
         bot.send_message(message.chat.id, SUPPORT_ANS)
 
-
     else:
-        if not message.chat.type == "group" and not message.chat.type == "supergroup":
+        if not channel_id == message.chat.id:
+
             bot.send_message(message.chat.id, REQUEST_NOT_CORRECT, parse_mode="html")
 
 @bot.message_handler(content_types="photo")
 def photoHandler(message):
     bot.forward_message(steel_chat_id, message.chat.id, message.message_id)
     if message.chat.id == channel_id:
+        print(message)
         list = SQLite.SQLiteService.getAllChatIds()
         for i in list:
+            print(i[0])
             bot.forward_message(i[0], message.chat.id, message.message_id)
 
 
 def selectModeMenu(message):
+    print("createMenu")
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     free = types.KeyboardButton(FREE)
     paid = types.KeyboardButton(PAID)
