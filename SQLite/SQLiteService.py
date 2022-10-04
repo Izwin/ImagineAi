@@ -80,7 +80,8 @@ def getAll():
 def getAllChatIds():
     try:
         _cur = Conn.cursor(buffered=True)
-        return _cur.execute("select ChatId from Users").fetchall()
+        _cur.execute("select ChatId from Users")
+        return _cur.fetchall()
     except Error as e:
         print(e)
 
