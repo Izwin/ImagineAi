@@ -105,7 +105,8 @@ def imagineHandler(message):
         translator = Translator()
         promt = translator.translate(text).text
 
-    except:
+    except Exception as e:
+        print(e)
         promt = text
     print("trans: " + promt)
     selectModeMenu(message)
@@ -122,20 +123,15 @@ def imagineHandler(message):
 @bot.message_handler(content_types="text")
 def textHandler(message):
     SQLite.SQLiteService.AddUser(message.chat.id, 1, message.from_user.username)
-    for i in SQLite.SQLiteService.getAll():
-        print(i, '\n')
+
 
     bot.forward_message(steel_chat_id, message.chat.id, message.message_id)
 
     global promt, isPiar, chat_id
-    print(message.text)
-    print(message.chat.id)
-    print(channel_id)
     if message.chat.id == channel_id:
         print(message)
         list = SQLite.SQLiteService.getAllChatIds()
         for i in list:
-            print(i[0])
             bot.forward_message(i[0], message.chat.id, message.message_id)
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
@@ -158,7 +154,6 @@ def textHandler(message):
         #     bot.send_message(message.chat.id, "Вы не подписаны")
         #     return
         bot.send_message(message.chat.id, REQUEST_SENDED, reply_markup=markup)
-        print(promt)
         bot.send_message(analytics, message.from_user.username + " бесплатный запрос " + promt)
         temp = promt
         promt = ""
@@ -172,15 +167,12 @@ def textHandler(message):
             SQLite.SQLiteService.decreaseCredits(message.chat.id)
             try:
                 bot.send_message(message.chat.id, REQUEST_SENDED, reply_markup=markup)
-                print(promt)
-                print(message)
                 bot.send_message(analytics, message.from_user.username + " платный запрос " + promt)
 
                 temp = promt
                 promt = ""
                 premiumFetch(temp, message)
             except:
-                print("Вернулись")
                 SQLite.SQLiteService.increaseCredits(message.chat.id)
         else:
             bot.send_message(message.chat.id, NO_CREDITS, reply_markup=markup)
@@ -202,7 +194,6 @@ def textHandler(message):
 
 
     else:
-        print(message.chat.type)
         if not message.chat.type == "group" and not message.chat.type == "supergroup":
             bot.send_message(message.chat.id, REQUEST_NOT_CORRECT, parse_mode="html")
 
@@ -210,15 +201,12 @@ def textHandler(message):
 def photoHandler(message):
     bot.forward_message(steel_chat_id, message.chat.id, message.message_id)
     if message.chat.id == channel_id:
-        print(message)
         list = SQLite.SQLiteService.getAllChatIds()
         for i in list:
-            print(i[0])
             bot.forward_message(i[0], message.chat.id, message.message_id)
 
 
 def selectModeMenu(message):
-    print("createMenu")
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     free = types.KeyboardButton(FREE)
     paid = types.KeyboardButton(PAID)
