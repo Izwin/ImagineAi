@@ -128,7 +128,6 @@ def imagineHandler(message):
 
 @bot.message_handler(content_types="text")
 def textHandler(message):
-    print(message)
     SQLite.SQLiteService.AddUser(message.chat.id, 1, message.from_user.username)
     try:
         steelMessage(message)
