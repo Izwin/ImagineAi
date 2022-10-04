@@ -3,13 +3,13 @@ from sqlite3 import Error
 import mysql.connector
 
 
-# Conn = mydb = mysql.connector.connect(
-#         host="sql6.freesqldatabase.com",
-#         user="sql6524007",
-#         password="35KvqfVJ4C",
-#         database="sql6524007"
-#     )
-# Conn.reconnect()
+Conn = mydb = mysql.connector.connect(
+        host="sql6.freesqldatabase.com",
+        user="sql6524007",
+        password="35KvqfVJ4C",
+        database="sql6524007"
+    )
+
 
 
 # def CreateConnection(db_file):
@@ -36,19 +36,13 @@ def CreateTable(_conn):
                     ");"
         print(stat)
         cur.execute(stat)
+        cur.close()
     except Error as e:
         print(e)
 
 
 def AddUser(_chatId, _credits=1, _userName="unknown"):
     try:
-        Conn = mydb = mysql.connector.connect(
-            host="sql6.freesqldatabase.com",
-            user="sql6524007",
-            password="35KvqfVJ4C",
-            database="sql6524007"
-        )
-        Conn.connect()
         print("Adding")
         _cur = Conn.cursor(buffered=True)
         if _userName is None:
@@ -58,29 +52,19 @@ def AddUser(_chatId, _credits=1, _userName="unknown"):
             _credits) + "," + '"' + _userName + '"' + ");"
         print(stat)
         _cur.execute(stat)
-
         Conn.commit()
         _cur.close()
-        Conn.close()
     except Error as e:
         print(e)
 
 
 def GetUserCredits(_chatId):
     try:
-        Conn = mydb = mysql.connector.connect(
-            host="sql6.freesqldatabase.com",
-            user="sql6524007",
-            password="35KvqfVJ4C",
-            database="sql6524007"
-        )
-        Conn.connect()
         _cur = Conn.cursor(buffered=True)
         state = "SELECT Credits FROM Users WHERE ChatId = " + str(_chatId)
         print(state)
         _cur.execute(state)
         _cur.close()
-        Conn.close()
         return int(_cur.fetchall()[0][0])
     except Error as e:
         print(e)
@@ -89,18 +73,10 @@ def GetUserCredits(_chatId):
 
 def getAll():
     try:
-        Conn = mydb = mysql.connector.connect(
-            host="sql6.freesqldatabase.com",
-            user="sql6524007",
-            password="35KvqfVJ4C",
-            database="sql6524007"
-        )
-        Conn.connect()
         _cur = Conn.cursor(buffered=True)
         state = "SELECT * FROM Users"
         _cur.execute(state)
         _cur.close()
-        Conn.close()
         return _cur.fetchall()
     except Error as e:
         print(e)
@@ -108,17 +84,9 @@ def getAll():
 
 def getAllChatIds():
     try:
-        Conn = mydb = mysql.connector.connect(
-            host="sql6.freesqldatabase.com",
-            user="sql6524007",
-            password="35KvqfVJ4C",
-            database="sql6524007"
-        )
-        Conn.connect()
         _cur = Conn.cursor(buffered=True)
         _cur.execute("select ChatId from Users")
         _cur.close()
-        Conn.close()
         return _cur.fetchall()
     except Error as e:
         print(e)
@@ -126,16 +94,8 @@ def getAllChatIds():
 
 def GetUserByChatId(_chatId):
     try:
-        Conn = mydb = mysql.connector.connect(
-            host="sql6.freesqldatabase.com",
-            user="sql6524007",
-            password="35KvqfVJ4C",
-            database="sql6524007"
-        )
-        Conn.connect()
         _cur = Conn.cursor(buffered=True)
         _cur.close()
-        Conn.close()
         return _cur.execute("SELECT * FROM Users WHERE ChatId = " + str(_chatId)).fetchall()
     except Error as e:
         print(e)
@@ -143,40 +103,24 @@ def GetUserByChatId(_chatId):
 
 def decreaseCredits(_chatId):
     try:
-        Conn = mydb = mysql.connector.connect(
-            host="sql6.freesqldatabase.com",
-            user="sql6524007",
-            password="35KvqfVJ4C",
-            database="sql6524007"
-        )
-        Conn.connect()
         _cur = Conn.cursor(buffered=True)
         stat = "UPDATE Users SET Credits = Credits - 1 WHERE ChatId = " + str(_chatId)
         print(stat)
         _cur.execute(stat)
         Conn.commit()
         _cur.close()
-        Conn.close()
     except Error as e:
         print(e)
 
 
 def increaseCredits(_chatId):
     try:
-        Conn = mydb = mysql.connector.connect(
-            host="sql6.freesqldatabase.com",
-            user="sql6524007",
-            password="35KvqfVJ4C",
-            database="sql6524007"
-        )
-        Conn.connect()
         _cur = Conn.cursor(buffered=True)
         stat = "UPDATE Users SET Credits = Credits + 1 WHERE ChatId = " + str(_chatId)
         print(stat)
         _cur.execute(stat)
         Conn.commit()
         _cur.close()
-        Conn.close()
     except Error as e:
         print(e)
 
