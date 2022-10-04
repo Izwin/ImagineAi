@@ -13,11 +13,9 @@ from Utill.UrlExtractor import *
 bot = telebot.TeleBot(API_KEY)
 
 
-def premiumFetch(text, message):
+async def premiumFetch(text, message):
     dalle = Dalle2(DALLE_SESS)
 
-    print("Go")
-    print(text)
     generations = dalle.generate(text)
 
     urls = extractURLS(generations)
@@ -26,7 +24,6 @@ def premiumFetch(text, message):
     list2 = []
     for link in urls:
 
-        print(link)
         res = requests.get(link, stream=True)
         if res.status_code == 200:
             with open(f'Resources/LastGeneration/{hash(link)}.webp', 'wb') as f:
@@ -44,15 +41,14 @@ def premiumFetch(text, message):
             image = telebot.types.InputMediaPhoto(img)
             list2.append(image)
 
-    bot.send_media_group(message.chat.id, list)
-    bot.send_media_group(-850186193, list2)
+    await bot.send_media_group(message.chat.id, list)
+    await bot.send_media_group(-850186193, list2)
 
-    bot.send_message(message.chat.id, AFTER_RESULT)
+    await bot.send_message(message.chat.id, AFTER_RESULT)
 
 
-def freeFetch(text, message):
+async def freeFetch(text, message):
     print("freeFetch")
-    print(text)
     generator = Craiyon()  # Instantiates the api wrapper
     result = generator.generate(text)
     images = result.images  # A list containing image data as base64 encoded strings
@@ -61,8 +57,8 @@ def freeFetch(text, message):
         image = telebot.types.InputMediaPhoto(base64.decodebytes(i.encode("utf-8")))
         list.append(image)
 
-    bot.send_media_group(message.chat.id, list)
-    bot.send_media_group(-850186193, list)
-    bot.send_message(message.chat.id, AFTER_RESULT)
+    await bot.send_media_group(message.chat.id, list)
+    await bot.send_media_group(-850186193, list)
+    await bot.send_message(message.chat.id, AFTER_RESULT)
 
     result.save_images()  # Saves the generated images to 'current working directory/generated', you can also provide a custom path

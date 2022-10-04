@@ -1,17 +1,20 @@
 import sqlite3
-from sqlite3 import Error
+from sqlite3 import Error, OperationalError
 import mysql.connector
 
+ConnForAdd = mysql.connector.connect(
+    host="bgqbgvhtkl5ebugndbag-mysql.services.clever-cloud.com",
+    user="uikvsb6zrtvrgmqc",
+    password="k6HKrlPgbn5gUxCRjL8i",
+    database="bgqbgvhtkl5ebugndbag"
+)
 
-Conn = mydb = mysql.connector.connect(
-        host="bgqbgvhtkl5ebugndbag-mysql.services.clever-cloud.com",
-        user="uikvsb6zrtvrgmqc",
-        password="k6HKrlPgbn5gUxCRjL8i",
-        database="bgqbgvhtkl5ebugndbag"
-    )
-
-
-
+ConnForChatId = mydb = mysql.connector.connect(
+    host="bgqbgvhtkl5ebugndbag-mysql.services.clever-cloud.com",
+    user="uikvsb6zrtvrgmqc",
+    password="k6HKrlPgbn5gUxCRjL8i",
+    database="bgqbgvhtkl5ebugndbag"
+)
 # def CreateConnection(db_file):
 #
 #     print(mydb)
@@ -27,6 +30,13 @@ Conn = mydb = mysql.connector.connect(
 
 
 def CreateTable(_conn):
+    Conn = mydb = mysql.connector.connect(
+        host="bgqbgvhtkl5ebugndbag-mysql.services.clever-cloud.com",
+        user="uikvsb6zrtvrgmqc",
+        password="k6HKrlPgbn5gUxCRjL8i",
+        database="bgqbgvhtkl5ebugndbag"
+    )
+
     try:
         cur = _conn.cursor(buffered=True)
         stat = "CREATE TABLE IF NOT EXISTS Users("\
@@ -39,26 +49,44 @@ def CreateTable(_conn):
         cur.close()
     except Error as e:
         print(e)
-
-CreateTable(Conn)
+#
+# CreateTable(Conn)
 def AddUser(_chatId, _credits=1, _userName="unknown"):
+
     try:
         print("Adding")
-        _cur = Conn.cursor(buffered=True)
+        _cur = ConnForAdd .cursor()
         if _userName is None:
             _userName = "unknown"
-        stat = "INSERT IGNORE INTO Users(ChatId,Credits, Username) VALUES (" + str(
-            _chatId) + "," + str(
-            _credits) + "," + '"' + _userName + '"' + ");"
+
+        stat = "SELECT * FROM Users WHERE ChatId = " + str(_chatId)
         print(stat)
         _cur.execute(stat)
-        Conn.commit()
-        _cur.close()
+        try:
+            print(_cur.fetchall()[0][0])
+            print("Не добавил")
+        except:
+            print("Добваил")
+            stat = "INSERT IGNORE INTO Users(ChatId,Credits, Username) VALUES (" + str(
+                _chatId) + "," + str(
+                _credits) + "," + '"' + _userName + '"' + ");"
+            print(stat)
+            _cur.execute(stat)
+            Conn.commit()
+
+
     except Error as e:
         print(e)
 
 
 def GetUserCredits(_chatId):
+    Conn = mydb = mysql.connector.connect(
+        host="bgqbgvhtkl5ebugndbag-mysql.services.clever-cloud.com",
+        user="uikvsb6zrtvrgmqc",
+        password="k6HKrlPgbn5gUxCRjL8i",
+        database="bgqbgvhtkl5ebugndbag"
+    )
+
     try:
         _cur = Conn.cursor(buffered=True)
         state = "SELECT Credits FROM Users WHERE ChatId = " + str(_chatId)
@@ -72,6 +100,13 @@ def GetUserCredits(_chatId):
 
 
 def getAll():
+    Conn = mydb = mysql.connector.connect(
+        host="bgqbgvhtkl5ebugndbag-mysql.services.clever-cloud.com",
+        user="uikvsb6zrtvrgmqc",
+        password="k6HKrlPgbn5gUxCRjL8i",
+        database="bgqbgvhtkl5ebugndbag"
+    )
+
     try:
         _cur = Conn.cursor(buffered=True)
         state = "SELECT * FROM Users"
@@ -83,8 +118,10 @@ def getAll():
 
 
 def getAllChatIds():
+
+
     try:
-        _cur = Conn.cursor(buffered=True)
+        _cur = ConnForChatId.cursor(buffered=True)
         _cur.execute("select ChatId from Users")
         _cur.close()
         return _cur.fetchall()
@@ -93,6 +130,13 @@ def getAllChatIds():
 
 
 def GetUserByChatId(_chatId):
+    Conn = mydb = mysql.connector.connect(
+        host="bgqbgvhtkl5ebugndbag-mysql.services.clever-cloud.com",
+        user="uikvsb6zrtvrgmqc",
+        password="k6HKrlPgbn5gUxCRjL8i",
+        database="bgqbgvhtkl5ebugndbag"
+    )
+
     try:
         _cur = Conn.cursor(buffered=True)
         _cur.close()
@@ -102,6 +146,13 @@ def GetUserByChatId(_chatId):
 
 
 def decreaseCredits(_chatId):
+    Conn = mydb = mysql.connector.connect(
+        host="bgqbgvhtkl5ebugndbag-mysql.services.clever-cloud.com",
+        user="uikvsb6zrtvrgmqc",
+        password="k6HKrlPgbn5gUxCRjL8i",
+        database="bgqbgvhtkl5ebugndbag"
+    )
+
     try:
         _cur = Conn.cursor(buffered=True)
         stat = "UPDATE Users SET Credits = Credits - 1 WHERE ChatId = " + str(_chatId)
@@ -114,6 +165,13 @@ def decreaseCredits(_chatId):
 
 
 def increaseCredits(_chatId):
+    Conn = mydb = mysql.connector.connect(
+        host="bgqbgvhtkl5ebugndbag-mysql.services.clever-cloud.com",
+        user="uikvsb6zrtvrgmqc",
+        password="k6HKrlPgbn5gUxCRjL8i",
+        database="bgqbgvhtkl5ebugndbag"
+    )
+
     try:
         _cur = Conn.cursor(buffered=True)
         stat = "UPDATE Users SET Credits = Credits + 1 WHERE ChatId = " + str(_chatId)
