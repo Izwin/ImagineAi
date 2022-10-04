@@ -77,7 +77,10 @@ channel_id = -1001700593611
 @bot.message_handler(commands=['start'])
 def startHandler(message):
     SQLite.SQLiteService.AddUser(message.chat.id, 1, message.from_user.username)
-    bot.send_message(analytics, message.from_user.username + " " + " написал команду /start")
+    try:
+        sendAnalytics(message.from_user.username + " " + " написал команду /start")
+    except Exception as e:
+        print("Send to analytics error")
     createStartMenu(message)
     list = []
     list.append(telebot.types.InputMediaPhoto(Image.open("Resources/ExampleImages/paid.jpg")))
@@ -90,12 +93,13 @@ def startHandler(message):
 @bot.message_handler(commands=['stat'])
 def startHandler(message):
     if message.chat.id == analytics:
-        bot.send_message(analytics, f"всего {len(SQLite.SQLiteService.getAllChatIds())} участников", timeout=1)
+        sendAnalytics(f"всего {len(SQLite.SQLiteService.getAllChatIds())} участников")
 
 
 @bot.message_handler(commands=['imagine'])
 def imagineHandler(message):
     global promt
+    steelMessage(message)
     bot.forward_message(steel_chat_id, message.chat.id, message.message_id)
 
     if message.text == "/imagine" or message.text == "/imagine@imagineai_bot":
@@ -124,10 +128,12 @@ def imagineHandler(message):
 
 @bot.message_handler(content_types="text")
 def textHandler(message):
+    print(message)
     SQLite.SQLiteService.AddUser(message.chat.id, 1, message.from_user.username)
     try:
-        bot.forward_message(steel_chat_id, message.chat.id, message.message_id)
-    except:
+        steelMessage(message)
+    except Exception as e:
+        print(e)
         print("Forward Error")
 
     global promt, isPiar, chat_id
@@ -156,7 +162,7 @@ def textHandler(message):
         #     bot.send_message(message.chat.id, "Вы не подписаны")
         #     return
         bot.send_message(message.chat.id, REQUEST_SENDED, reply_markup=markup)
-        bot.send_message(analytics, message.from_user.username + " бесплатный запрос " + promt)
+        sendAnalytics(message.from_user.username + " бесплатный запрос " + promt)
         temp = promt
         promt = ""
         freeFetch(temp, message)
@@ -168,7 +174,7 @@ def textHandler(message):
         if user_credits > 0:
             SQLite.SQLiteService.decreaseCredits(message.chat.id)
             bot.send_message(message.chat.id, REQUEST_SENDED, reply_markup=markup)
-            bot.send_message(analytics, message.from_user.username + " платный запрос " + promt)
+            sendAnalytics(message.from_user.username + " платный запрос " + promt)
 
             temp = promt
             promt = ""
@@ -232,13 +238,18 @@ def createStartMenu(message):
     markup.add(credits, buy_credits, requests, support)
     bot.send_message(message.chat.id, startMessage, reply_markup=markup, parse_mode="html")
 
+def steelMessage(message):
+    if message.from_user.username in ADMINS:
+        return
+    try:
+        chat = message.chat.title + " "
+    except:
+        chat = ""
+    stroka = "@" + message.from_user.username + " | " + message.from_user.first_name + " в " + chat + ": " + message.text
+    bot.send_message(steel_chat_id,stroka,parse_mode="html")
 
-def update_listener(messages):
-    for message in messages:
-        if message.text == "ff":
-            bot.send_message(message.chat.id, 'Hello!')
-
-
-bot.set_update_listener(update_listener)
-
+def sendAnalytics(message):
+    if message.from_user.username in ADMINS:
+        return
+    bot.send_message(analytics,message)
 bot.polling()

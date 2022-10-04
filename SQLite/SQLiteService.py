@@ -41,14 +41,14 @@ def CreateTable(_conn):
 #
 # CreateTable(Conn)
 def AddUser(_chatId, _credits=1, _userName="unknown"):
-
+    ConnForAdd = mysql.connector.connect(
+        host="bgqbgvhtkl5ebugndbag-mysql.services.clever-cloud.com",
+        user="uikvsb6zrtvrgmqc",
+        password="k6HKrlPgbn5gUxCRjL8i",
+        database="bgqbgvhtkl5ebugndbag"
+    )
     try:
-        ConnForAdd = mysql.connector.connect(
-            host="bgqbgvhtkl5ebugndbag-mysql.services.clever-cloud.com",
-            user="uikvsb6zrtvrgmqc",
-            password="k6HKrlPgbn5gUxCRjL8i",
-            database="bgqbgvhtkl5ebugndbag"
-        )
+
         _cur = ConnForAdd.cursor()
         if _userName is None:
             _userName = "unknown"
@@ -56,14 +56,18 @@ def AddUser(_chatId, _credits=1, _userName="unknown"):
         stat = "SELECT * FROM Users WHERE ChatId = " + str(_chatId)
         _cur.execute(stat)
         try:
-            print("Не добавил")
+            _cur.fetchall()[0][0]
         except:
             print("Добваил")
             stat = "INSERT IGNORE INTO Users(ChatId,Credits, Username) VALUES (" + str(
                 _chatId) + "," + str(
                 _credits) + "," + '"' + _userName + '"' + ");"
-            _cur.execute(stat)
+            print(stat)
+            print(_cur.execute(stat))
+        finally:
+            _cur.close()
             ConnForAdd.commit()
+
 
 
     except Error as e:
@@ -71,21 +75,26 @@ def AddUser(_chatId, _credits=1, _userName="unknown"):
 
 
 def GetUserCredits(_chatId):
-    Conn = mydb = mysql.connector.connect(
-        host="bgqbgvhtkl5ebugndbag-mysql.services.clever-cloud.com",
-        user="uikvsb6zrtvrgmqc",
-        password="k6HKrlPgbn5gUxCRjL8i",
-        database="bgqbgvhtkl5ebugndbag"
-    )
 
     try:
+        Conn = mydb = mysql.connector.connect(
+            host="bgqbgvhtkl5ebugndbag-mysql.services.clever-cloud.com",
+            user="uikvsb6zrtvrgmqc",
+            password="k6HKrlPgbn5gUxCRjL8i",
+            database="bgqbgvhtkl5ebugndbag"
+        )
+
         _cur = Conn.cursor(buffered=True)
-        state = "SELECT Credits FROM Users WHERE ChatId = " + str(_chatId)
+        state = "SELECT Credits FROM Users WHERE ChatId = " + str(741168747)
+        print(state)
         _cur.execute(state)
-        _cur.close()
+
         return int(_cur.fetchall()[0][0])
     except Error as e:
         print(e)
+    finally:
+        _cur.close()
+
 
 
 

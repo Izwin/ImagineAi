@@ -19,3 +19,6 @@ NO_CREDITS = "У вас не хватает кредитов!"
 
 FREE = "Бесплатно 🎁"
 PAID = "PRO Версия 💳"
+
+
+ADMINS = ["sheluvsshmmookyyy", "raufkhalilov","eclippsss"]
