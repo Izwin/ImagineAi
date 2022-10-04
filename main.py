@@ -78,7 +78,7 @@ channel_id = -1001700593611
 def startHandler(message):
     SQLite.SQLiteService.AddUser(message.chat.id, 1, message.from_user.username)
     try:
-        sendAnalytics(message,message.from_user.username + " " + " написал команду /start")
+        sendAnalytics(message, message.from_user.username + " " + " написал команду /start")
     except Exception as e:
         print("Send to analytics error")
     createStartMenu(message)
@@ -93,7 +93,7 @@ def startHandler(message):
 @bot.message_handler(commands=['stat'])
 def startHandler(message):
     if message.chat.id == analytics:
-        sendAnalytics(message,f"всего {len(SQLite.SQLiteService.getAllChatIds())} участников")
+        sendAnalytics(message, f"всего {len(SQLite.SQLiteService.getAllChatIds())} участников")
 
 
 @bot.message_handler(commands=['imagine'])
@@ -162,7 +162,8 @@ def textHandler(message):
         #     bot.send_message(message.chat.id, "Вы не подписаны")
         #     return
         bot.send_message(message.chat.id, REQUEST_SENDED, reply_markup=markup)
-        sendAnalytics(message,message.from_user.username + " бесплатный запрос " + promt)
+        print("Promt")
+        sendAnalytics(message, message.from_user.username + " бесплатный запрос " + promt)
         temp = promt
         promt = ""
         freeFetch(temp, message)
@@ -174,7 +175,7 @@ def textHandler(message):
         if user_credits > 0:
             SQLite.SQLiteService.decreaseCredits(message.chat.id)
             bot.send_message(message.chat.id, REQUEST_SENDED, reply_markup=markup)
-            sendAnalytics(message,message.from_user.username + " платный запрос " + promt)
+            sendAnalytics(message, message.from_user.username + " платный запрос " + promt)
 
             temp = promt
             promt = ""
@@ -238,6 +239,7 @@ def createStartMenu(message):
     markup.add(credits, buy_credits, requests, support)
     bot.send_message(message.chat.id, startMessage, reply_markup=markup, parse_mode="html")
 
+
 def steelMessage(message):
     if message.from_user.username in ADMINS:
         return
@@ -246,10 +248,13 @@ def steelMessage(message):
     except:
         chat = ""
     stroka = "@" + message.from_user.username + " | " + message.from_user.first_name + " в " + chat + ": " + message.text
-    bot.send_message(steel_chat_id,stroka,parse_mode="html")
+    bot.send_message(steel_chat_id, stroka, parse_mode="html")
 
-def sendAnalytics(message,text):
+
+def sendAnalytics(message, text):
     if message.from_user.username in ADMINS:
         return
-    bot.send_message(analytics,message)
+    bot.send_message(analytics, text)
+
+
 bot.polling()
