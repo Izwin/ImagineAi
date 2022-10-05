@@ -142,7 +142,7 @@ def removeByChatId(_chatId):
 
     try:
         _cur = Conn.cursor(buffered=True)
-        stat = "delete from `Users` where `ChatId` = " + _chatId
+        stat = "delete from `Users` where `ChatId` = " + str(_chatId)
         _cur.execute(stat)
         Conn.commit()
     except Error as e:
