@@ -255,8 +255,6 @@ def steelMessage(message):
 
 
 def sendAnalytics(message, text):
-    if message.from_user.username in ADMINS:
-        return
     bot.send_message(analytics, text)
 
 

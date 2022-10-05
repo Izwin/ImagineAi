@@ -39,8 +39,11 @@ def premiumFetch(text, message):
             image = telebot.types.InputMediaPhoto(img)
             list2.append(image)
 
-    bot.send_media_group(message.chat.id, list)
-    bot.send_media_group(-850186193, list2)
+    try:
+        bot.send_media_group(message.chat.id, list)
+        bot.send_media_group(-850186193, list2)
+    except:
+        bot.send_message(message.chat.id,)
 
     bot.send_message(message.chat.id, AFTER_RESULT)
 
