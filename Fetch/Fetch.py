@@ -14,7 +14,6 @@ from Utill.UrlExtractor import *
 
 bot = telebot.TeleBot(API_KEY)
 
-
 def premiumFetch(text, message):
     dalle = Dalle2(DALLE_SESS)
 

