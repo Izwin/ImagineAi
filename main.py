@@ -95,7 +95,6 @@ def startHandler(message):
     if message.chat.id == analytics:
         sendAnalytics(message, f"всего {len(SQLite.SQLiteService.getAllChatIds())} участников")
 
-
 @bot.message_handler(commands=['imagine'])
 def imagineHandler(message):
     global promt
@@ -142,6 +141,7 @@ def textHandler(message):
             try:
                 bot.forward_message(i[0], message.chat.id, message.message_id)
             except:
+                SQLite.SQLiteService.removeByChatId(message.chat.id)
                 print("Forward Message Error")
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
