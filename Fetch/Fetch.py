@@ -1,30 +1,32 @@
 import base64
 import shutil
+import types
 import urllib
+from threading import Timer
 
-import requests
 import telebot
 from PIL import Image
 from craiyon import Craiyon
 from dalle2 import Dalle2
-
 import SQLite.SQLiteService
 from Resources.Constants.ConstantMessages import *
 from Utill.UrlExtractor import *
 
+
 bot = telebot.TeleBot(API_KEY)
 
 def premiumFetch(text, message):
+
+
     dalle = Dalle2(DALLE_SESS)
 
     generations = dalle.generate(text)
 
     urls = extractURLS(generations)
-
+    print(urls)
     list = []
     list2 = []
     for link in urls:
-
         res = requests.get(link, stream=True)
         if res.status_code == 200:
             with open(f'Resources/LastGeneration/{hash(link)}.webp', 'wb') as f:
@@ -46,10 +48,15 @@ def premiumFetch(text, message):
         bot.send_media_group(-850186193, list2)
     except:
         SQLite.SQLiteService.increaseCredits(message.chat.id)
-        bot.send_message(message.chat.id,SAFETY_SYSTEM)
+        sendAndDeleteMessage(bot.send_message(message.chat.id,SAFETY_SYSTEM))
         return
-
-    bot.send_message(message.chat.id, AFTER_RESULT)
+    markup = types.InlineKeyboardMarkup()
+    credits = types.InlineKeyboardButton(MY_CREDITS, callback_data="credits")
+    buy_credits = types.InlineKeyboardButton(BUY_CREDITS, callback_data="buy_credits")
+    requests = types.InlineKeyboardButton(EXAMPLES_PROMTS, callback_data="requests")
+    support = types.InlineKeyboardButton(SUPPORT, callback_data="support")
+    markup.add(credits, buy_credits, requests, support)
+    bot.send_message(message.chat.id, AFTER_RESULT,reply_markup=markup)
 
 
 def freeFetch(text, message):
@@ -66,3 +73,9 @@ def freeFetch(text, message):
     bot.send_message(message.chat.id, AFTER_RESULT)
 
     result.save_images()  # Saves the generated images to 'current working directory/generated', you can also provide a custom path
+def sendAndDeleteMessage(message):
+    t = Timer(5, deleteMessage, [message])
+    t.start()
+
+def deleteMessage(message):
+    bot.delete_message(message.chat.id, message.message_id)
