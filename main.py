@@ -174,6 +174,7 @@ def textHandler(message):
             bot.send_message(message.chat.id, REQUEST_NOT_CORRECT, parse_mode="html")
             return
         user_credits = SQLite.SQLiteService.GetUserCredits(message.chat.id)
+        print(user_credits)
         if user_credits > 0:
             SQLite.SQLiteService.decreaseCredits(message.chat.id)
             bot.send_message(message.chat.id, REQUEST_SENDED, reply_markup=markup)
@@ -259,4 +260,4 @@ def sendAnalytics(message, text):
     bot.send_message(analytics, text)
 
 
-bot.polling()
+bot.infinity_polling()

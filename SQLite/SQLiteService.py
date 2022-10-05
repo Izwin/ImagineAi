@@ -85,7 +85,7 @@ def GetUserCredits(_chatId):
         )
 
         _cur = Conn.cursor(buffered=True)
-        state = "SELECT Credits FROM Users WHERE ChatId = " + str(741168747)
+        state = "SELECT Credits FROM Users WHERE ChatId = " + str(_chatId)
         print(state)
         _cur.execute(state)
 
@@ -149,21 +149,25 @@ def GetUserByChatId(_chatId):
 
 
 def decreaseCredits(_chatId):
-    Conn = mydb = mysql.connector.connect(
-        host="bgqbgvhtkl5ebugndbag-mysql.services.clever-cloud.com",
-        user="uikvsb6zrtvrgmqc",
-        password="k6HKrlPgbn5gUxCRjL8i",
-        database="bgqbgvhtkl5ebugndbag"
-    )
 
     try:
+        print("Descrease")
+        Conn = mydb = mysql.connector.connect(
+            host="bgqbgvhtkl5ebugndbag-mysql.services.clever-cloud.com",
+            user="uikvsb6zrtvrgmqc",
+            password="k6HKrlPgbn5gUxCRjL8i",
+            database="bgqbgvhtkl5ebugndbag"
+        )
+
         _cur = Conn.cursor(buffered=True)
         stat = "UPDATE Users SET Credits = Credits - 1 WHERE ChatId = " + str(_chatId)
+        print(stat)
         _cur.execute(stat)
-        Conn.commit()
-        _cur.close()
     except Error as e:
         print(e)
+    finally:
+        _cur.close()
+        Conn.commit()
 
 
 def increaseCredits(_chatId):
@@ -177,10 +181,14 @@ def increaseCredits(_chatId):
     try:
         _cur = Conn.cursor(buffered=True)
         stat = "UPDATE Users SET Credits = Credits + 1 WHERE ChatId = " + str(_chatId)
+        print(stat)
         _cur.execute(stat)
-        Conn.commit()
-        _cur.close()
+
     except Error as e:
         print(e)
+    finally:
+        _cur.close()
+        Conn.commit()
+
 
 
