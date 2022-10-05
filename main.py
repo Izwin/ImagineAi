@@ -250,8 +250,8 @@ def steelMessage(message):
         chat = message.chat.title + " "
     except:
         chat = ""
-    stroka = "@" + message.from_user.username + " | " + message.from_user.first_name + " в " + chat + ": " + message.text
-    bot.send_message(steel_chat_id, stroka, parse_mode="html")
+    # stroka = "@" + message.from_user.username + " | " + message.from_user.first_name + " в " + chat + ": " + message.text
+    bot.forward_message(steel_chat_id,message.chat.id,message.message_id)
 
 
 def sendAnalytics(message, text):
