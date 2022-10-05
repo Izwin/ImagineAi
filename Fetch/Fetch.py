@@ -81,7 +81,7 @@ def freeFetch(text, message):
     support = telebot.types.InlineKeyboardButton(SUPPORT, callback_data="support")
     markup.add(credits, buy_credits, requests1, support)
 
-    return bot.send_message(message.chat.id, AFTER_RESULTб,reply_markup=markup)
+    return bot.send_message(message.chat.id, AFTER_RESULT,reply_markup=markup)
 
     result.save_images()  # Saves the generated images to 'current working directory/generated', you can also provide a custom path
 def sendAndDeleteMessage(message):
