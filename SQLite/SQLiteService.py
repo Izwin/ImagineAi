@@ -88,10 +88,13 @@ def GetUserCredits(_chatId):
         state = "SELECT Credits FROM Users WHERE ChatId = " + str(_chatId)
         print(state)
         _cur.execute(state)
-        _cur.close()
+
         return int(_cur.fetchall()[0][0])
     except Error as e:
         print(e)
+    finally:
+        _cur.close()
+        Conn.close()
 
 
 
