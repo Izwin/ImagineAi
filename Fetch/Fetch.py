@@ -7,6 +7,8 @@ import telebot
 from PIL import Image
 from craiyon import Craiyon
 from dalle2 import Dalle2
+
+import SQLite.SQLiteService
 from Resources.Constants.ConstantMessages import *
 from Utill.UrlExtractor import *
 
@@ -33,6 +35,7 @@ def premiumFetch(text, message):
                 image = telebot.types.InputMediaPhoto(img)
                 list.append(image)
         else:
+            SQLite.SQLiteService.increaseCredits(message.chat.id)
             print("Dalle Image Download Failed")
         with urllib.request.urlopen(link) as url:
             img = Image.open(url)
@@ -43,7 +46,9 @@ def premiumFetch(text, message):
         bot.send_media_group(message.chat.id, list)
         bot.send_media_group(-850186193, list2)
     except:
-        bot.send_message(message.chat.id,)
+        SQLite.SQLiteService.increaseCredits(message.chat.id)
+        bot.send_message(message.chat.id,SAFETY_SYSTEM)
+        return
 
     bot.send_message(message.chat.id, AFTER_RESULT)
 

@@ -216,7 +216,7 @@ def photoHandler(message):
             try:
                 bot.forward_message(i[0], message.chat.id, message.message_id)
             except Exception as e:
-                print(e)
+                SQLite.SQLiteService.removeByChatId(message.chat.id)
 
 
 def selectModeMenu(message):

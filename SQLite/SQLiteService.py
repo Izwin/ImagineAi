@@ -132,6 +132,24 @@ def getAllChatIds():
         print(e)
 
 
+def removeByChatId(_chatId):
+    Conn = mydb = mysql.connector.connect(
+        host="bgqbgvhtkl5ebugndbag-mysql.services.clever-cloud.com",
+        user="uikvsb6zrtvrgmqc",
+        password="k6HKrlPgbn5gUxCRjL8i",
+        database="bgqbgvhtkl5ebugndbag"
+    )
+
+    try:
+        _cur = Conn.cursor(buffered=True)
+        stat = "delete from `Users` where `ChatId` = " + _chatId
+        _cur.execute(stat)
+        Conn.commit()
+    except Error as e:
+        print(e)
+    finally:
+        _cur.close()
+        Conn.close()
 def GetUserByChatId(_chatId):
     Conn = mydb = mysql.connector.connect(
         host="bgqbgvhtkl5ebugndbag-mysql.services.clever-cloud.com",
