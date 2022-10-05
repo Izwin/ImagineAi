@@ -170,7 +170,7 @@ def callback_query(call):
         #     print(e)
         #     bot.send_message(message.chat.id, "Вы не подписаны")
         #     return
-        bot.edit_message_text(REQUEST_SENDED, temp_message.chat.id, bot_message, parse_mode="html", reply_markup=markup)
+        deleteMessage(bot.edit_message_text(REQUEST_SENDED, temp_message.chat.id, bot_message, parse_mode="html", reply_markup=markup))
 
         sendAnalytics(temp_message, temp_message.from_user.username + " бесплатный запрос " + prompt)
         temp = prompt
@@ -184,7 +184,7 @@ def callback_query(call):
         print(user_credits)
         if user_credits > 0:
             SQLite.SQLiteService.decreaseCredits(temp_message.chat.id)
-            bot.edit_message_text(REQUEST_SENDED, temp_message.chat.id, bot_message, parse_mode="html", reply_markup=markup)
+            sendAndDeleteMessage(bot.edit_message_text(REQUEST_SENDED, temp_message.chat.id, bot_message, parse_mode="html", reply_markup=markup))
             sendAnalytics(temp_message, temp_message.from_user.username + " платный запрос " + prompt)
 
             temp = prompt
@@ -275,7 +275,8 @@ def textHandler(message):
     else:
         if not channel_id == message.chat.id:
             if not message.chat.type == "group" and not message.chat.type == "supergroup":
-                bot.send_message(message.chat.id, REQUEST_NOT_CORRECT, parse_mode="html")
+                sendAndDeleteMessage(bot.send_message(message.chat.id, REQUEST_NOT_CORRECT, parse_mode="html"))
+                sendAndDeleteMessage(message)
 
 
 @bot.message_handler(
@@ -344,7 +345,7 @@ def sendAnalytics(message, text):
     bot.send_message(analytics, text)
 
 def sendAndDeleteMessage(message):
-    t = Timer(4,deleteMessage,[message])
+    t = Timer(5,deleteMessage,[message])
     t.start()
 
 
