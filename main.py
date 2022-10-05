@@ -139,7 +139,10 @@ def textHandler(message):
     if message.chat.id == channel_id:
         list = SQLite.SQLiteService.getAllChatIds()
         for i in list:
-            bot.forward_message(i[0], message.chat.id, message.message_id)
+            try:
+                bot.forward_message(i[0], message.chat.id, message.message_id)
+            except:
+                print("Forward Message Error")
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
     credits = types.KeyboardButton(MY_CREDITS)
