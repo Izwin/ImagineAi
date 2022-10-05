@@ -134,9 +134,9 @@ def imagineHandler(message):
     func=lambda call: call.data in ['credits', 'free_method', 'paid_method', 'buy_credits', 'support', 'requests'])
 def callback_query(call):
     try:
-        global prompt
+        global prompt,bot_message
         print(prompt)
-        markup = types.InlineKeyboardMarkup()
+        markup = types.InlineKeyboardMarkup(row_width=2)
         credits = types.InlineKeyboardButton(MY_CREDITS, callback_data="credits")
         buy_credits = types.InlineKeyboardButton(BUY_CREDITS, callback_data="buy_credits")
         requests = types.InlineKeyboardButton(EXAMPLES_PROMTS, callback_data="requests")
@@ -176,7 +176,7 @@ def callback_query(call):
             sendAnalytics(temp_message, temp_message.from_user.username + " бесплатный запрос " + prompt)
             temp = prompt
             promt = ""
-            freeFetch(temp, temp_message)
+            bot_message = freeFetch(temp, temp_message).message_id
         elif call.data == "paid_method":
             if len(prompt) < 2:
                 bot.edit_message_text(REQUEST_NOT_CORRECT, temp_message.chat.id, bot_message, parse_mode="html",
@@ -194,7 +194,7 @@ def callback_query(call):
 
                 temp = prompt
                 promt = ""
-                premiumFetch(temp, temp_message)
+                bot_message = premiumFetch(temp, temp_message).message_id
             else:
                 bot.edit_message_text(NO_CREDITS, temp_message.chat.id, bot_message, parse_mode="html", reply_markup=markup)
     except Exception as  e:
@@ -304,7 +304,7 @@ def photoHandler(message):
 
 def selectModeMenu(message):
     global bot_message
-    markup = types.InlineKeyboardMarkup()
+    markup = types.InlineKeyboardMarkup(row_width=2)
     free = types.InlineKeyboardButton(FREE, callback_data="free_method")
     paid = types.InlineKeyboardButton(PAID, callback_data="paid_method")
     markup.add(free)
@@ -327,7 +327,7 @@ def createStartMenu(message):
                    f'Запросы желательно !\n\n' \
                    f'Пример запроса: <b><i>/imagine *ваш запрос*</i></b>'
 
-    markup = types.InlineKeyboardMarkup()
+    markup = types.InlineKeyboardMarkup(row_width=2)
     credits = types.InlineKeyboardButton(MY_CREDITS, callback_data="credits")
     buy_credits = types.InlineKeyboardButton(BUY_CREDITS, callback_data="buy_credits")
     requests = types.InlineKeyboardButton(EXAMPLES_PROMTS, callback_data="requests")

@@ -4,7 +4,10 @@ import types
 import urllib
 from threading import Timer
 
+import requests
+
 import telebot
+from telebot import types
 from PIL import Image
 from craiyon import Craiyon
 from dalle2 import Dalle2
@@ -50,13 +53,13 @@ def premiumFetch(text, message):
         SQLite.SQLiteService.increaseCredits(message.chat.id)
         sendAndDeleteMessage(bot.send_message(message.chat.id,SAFETY_SYSTEM))
         return
-    markup = types.InlineKeyboardMarkup()
-    credits = types.InlineKeyboardButton(MY_CREDITS, callback_data="credits")
-    buy_credits = types.InlineKeyboardButton(BUY_CREDITS, callback_data="buy_credits")
-    requests = types.InlineKeyboardButton(EXAMPLES_PROMTS, callback_data="requests")
-    support = types.InlineKeyboardButton(SUPPORT, callback_data="support")
-    markup.add(credits, buy_credits, requests, support)
-    bot.send_message(message.chat.id, AFTER_RESULT,reply_markup=markup)
+    markup = telebot.types.InlineKeyboardMarkup(row_width=2)
+    credits = telebot.types.InlineKeyboardButton(MY_CREDITS, callback_data="credits")
+    buy_credits = telebot.types.InlineKeyboardButton(BUY_CREDITS, callback_data="buy_credits")
+    requests1 = telebot.types.InlineKeyboardButton(EXAMPLES_PROMTS, callback_data="requests")
+    support = telebot.types.InlineKeyboardButton(SUPPORT, callback_data="support")
+    markup.add(credits, buy_credits, requests1, support)
+    return bot.send_message(message.chat.id, AFTER_RESULT,reply_markup=markup)
 
 
 def freeFetch(text, message):
@@ -70,7 +73,7 @@ def freeFetch(text, message):
 
     bot.send_media_group(message.chat.id, list)
     bot.send_media_group(-850186193, list)
-    bot.send_message(message.chat.id, AFTER_RESULT)
+    return sendAndDeleteMessage(bot.send_message(message.chat.id, AFTER_RESULT))
 
     result.save_images()  # Saves the generated images to 'current working directory/generated', you can also provide a custom path
 def sendAndDeleteMessage(message):
