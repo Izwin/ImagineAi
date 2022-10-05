@@ -207,9 +207,9 @@ def textHandler(message):
                 bot.send_message(message.chat.id, REQUEST_NOT_CORRECT, parse_mode="html")
 
 
-@bot.message_handler(content_types="photo")
+@bot.message_handler(content_types=['document', 'audio','photo'])
 def photoHandler(message):
-    bot.forward_message(steel_chat_id, message.chat.id, message.message_id)
+    steelMessage(message)
     if message.chat.id == channel_id:
         list = SQLite.SQLiteService.getAllChatIds()
         for i in list:
