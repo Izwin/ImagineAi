@@ -1,5 +1,5 @@
 API_KEY = "5497414946:AAFByjMLiHy9xnKtzFv9I2CftSqglQT7gtY"
-DALLE_SESS = "sess-DjbwVg6pvvwkwDyFG9jLA5NGGRGAPo7u96llR87i"
+DALLE_SESS = "sess-ADdUc4I1W6fhe1VS5S59gZn3lQwxHjXsMQJoMz09"
 
 MY_CREDITS = "Мои кредиты 💰"
 
