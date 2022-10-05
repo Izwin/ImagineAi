@@ -123,10 +123,11 @@ def getAllChatIds():
     try:
         _cur = ConnForChatId.cursor(buffered=True)
         _cur.execute("select ChatId from Users")
-        _cur.close()
         return _cur.fetchall()
     except Error as e:
         print(e)
+    finally:
+        _cur.close()
 
 
 def GetUserByChatId(_chatId):

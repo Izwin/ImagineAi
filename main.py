@@ -244,15 +244,22 @@ def createStartMenu(message):
 
 
 def steelMessage(message):
-    # if message.from_user.username in ADMINS:
-    #     return
+    if message.from_user.username in ADMINS:
+        return
     try:
         print(message)
         chat = message.chat.title + " "
     except:
         chat = ""
-    # stroka = "@" + message.from_user.username + " | " + message.from_user.first_name + " в " + chat + ": " + message.text
-    bot.forward_message(steel_chat_id,message.chat.id,message.message_id)
+
+    if (message.content_type == "text"):
+        text = "@" + str(message.from_user.username) + " | " + str(message.from_user.first_name) + " в " + str(chat) + ": " + str(message.text)
+    else:
+        text = "@" + str(message.from_user.username) + " | " + str(message.from_user.first_name) + " в " + str(chat) + ": " + str(message.caption)
+        bot.forward_message(steel_chat_id,message.chat.id,message.message_id)
+
+    bot.send_message(steel_chat_id, text)
+
 
 
 def sendAnalytics(message, text):
@@ -260,3 +267,4 @@ def sendAnalytics(message, text):
 
 
 bot.infinity_polling()
+
