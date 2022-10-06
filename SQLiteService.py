@@ -181,9 +181,9 @@ def lastQuery(chatId, lastQuery):
         now = datetime.now()
         cur = Conn.cursor()
         stat = "UPDATE Users SET LastUse = " + "'" + now.strftime("%d-%m-%Y %H:%M:%S") + "'" + "," + " LastQuery =" + "'" + lastQuery + "'" + " WHERE ChatId = " + str(chatId)
+        print(stat)
 
         cur.execute(stat)
-        print(stat)
         Conn.commit()
     except Error as e:
         print(e)
