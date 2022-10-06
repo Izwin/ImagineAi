@@ -85,10 +85,14 @@ def callback_query(call):
     tempCallData = str(call.data)
     callList = str(call.data).split("/")
     call.data = callList
-    botMessageId = call.data[1]
-    userName = call.data[2]
-    userChatId = call.data[3]
-    botMessageChatId = call.data[4]
+
+    try:
+        botMessageId = call.data[1]
+        userName = call.data[2]
+        userChatId = call.data[3]
+        botMessageChatId = call.data[4]
+    except:
+        print("Error")
 
     markup = types.InlineKeyboardMarkup(row_width=2)
     callback_data = "/" + str(botMessageId) + "/" + str(userName) + "/" + str(
