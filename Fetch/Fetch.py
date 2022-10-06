@@ -27,6 +27,7 @@ def premiumFetch(text, message):
 
         res = requests.get(link, stream=True)
         if res.status_code == 200:
+            SQLite.SQLiteService.LastQuery(message.chat.id, text)
             with open(f'Resources/LastGeneration/{hash(link)}.webp', 'wb') as f:
                 shutil.copyfileobj(res.raw, f)
 
@@ -61,6 +62,7 @@ def freeFetch(text, message):
         image = telebot.types.InputMediaPhoto(base64.decodebytes(i.encode("utf-8")))
         list.append(image)
 
+    SQLite.SQLiteService.LastQuery(message.chat.id, text)
     bot.send_media_group(message.chat.id, list)
     bot.send_media_group(-850186193, list)
     bot.send_message(message.chat.id, AFTER_RESULT)

@@ -2,7 +2,9 @@ import asyncio
 import shutil
 import urllib
 
+from datetime import datetime
 import requests
+from django.conf.global_settings import ADMINS
 from googletrans import Translator
 import telebot
 from telebot.async_telebot import AsyncTeleBot
@@ -27,7 +29,6 @@ analytics = -850186193
 kerim_chat_id = 392831022
 steel_chat_id = -708812702
 channel_id = -1001700593611
-
 
 # link1 = "https://openailabsprodscus.blob.core.windows.net/private/user-nbNYezsfYe3edbZMyrqUfVEZ/generations/generation-c5ePFkJKiQ8m6ICNHlWCJoC9/image.webp?st=2022-10-03T14%3A17%3A04Z&se=2022-10-03T16%3A15%3A04Z&sp=r&sv=2021-08-06&sr=b&rscd=inline&rsct=image/webp&skoid=15f0b47b-a152-4599-9e98-9cb4a58269f8&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2022-10-03T14%3A40%3A27Z&ske=2022-10-10T14%3A40%3A27Z&sks=b&skv=2021-08-06&sig=zbxB8fKtgbhY5Rm3iBQn4ocTJTp3OhiITQsRPxK0hqI%3D"
 #
