@@ -179,6 +179,7 @@ def lastQuery(chatId, lastQuery):
             database=DB_credits.DATABASE
         )
         now = datetime.now()
+
         cur = Conn.cursor()
         stat = "UPDATE Users SET LastUse = " + "'" + now.strftime("%d-%m-%Y %H:%M:%S") + "'" + "," + " LastQuery =" + "'" + lastQuery + "'" + " WHERE ChatId = " + str(chatId)
         print(stat)
