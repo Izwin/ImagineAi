@@ -1,109 +1,56 @@
 import asyncio
-import shutil
-import urllib
+import json
+from threading import Timer
 
-from datetime import datetime
-import requests
-from django.conf.global_settings import ADMINS
-from googletrans import Translator
 import telebot
-from telebot.async_telebot import AsyncTeleBot
-import telebot.asyncio_filters
-from telebot import types
 from PIL import Image
-import logging
+from googletrans import Translator
 
-from Fetch.Fetch import freeFetch, premiumFetch
-from Resources.Constants import Ranks
-from Resources.Constants.ConstantMessages import *
-import SQLite.SQLiteService
+from telebot import types
 
-bot = telebot.TeleBot(API_KEY)
+import ChatIds
+import Constants
+import SQLiteService
+from Fetch import freeFetch, premiumFetch
+from MarkupsHelper import *
 
-promt = ""
+bot = telebot.TeleBot(Constants.API_KEY)
 
-isPiar = False
-
-chat_id = -1288868326
-analytics = -850186193
-kerim_chat_id = 392831022
-steel_chat_id = -708812702
-channel_id = -1001700593611
-
-# link1 = "https://openailabsprodscus.blob.core.windows.net/private/user-nbNYezsfYe3edbZMyrqUfVEZ/generations/generation-c5ePFkJKiQ8m6ICNHlWCJoC9/image.webp?st=2022-10-03T14%3A17%3A04Z&se=2022-10-03T16%3A15%3A04Z&sp=r&sv=2021-08-06&sr=b&rscd=inline&rsct=image/webp&skoid=15f0b47b-a152-4599-9e98-9cb4a58269f8&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2022-10-03T14%3A40%3A27Z&ske=2022-10-10T14%3A40%3A27Z&sks=b&skv=2021-08-06&sig=zbxB8fKtgbhY5Rm3iBQn4ocTJTp3OhiITQsRPxK0hqI%3D"
-#
-# list = []
-# list1 = []
-#
-# list1.append(link1)
-# list1.append(link1)
-#
-# # res = requests.get(link, stream = True)
-# # if res.status_code == 200:
-# #     with open("temp.webp",'wb') as f:
-# #         shutil.copyfileobj(res.raw, f)
-# #     print('Image sucessfully Downloaded: ',"temp.webp")
-# # else:
-# #     print('Image Couldn\'t be retrieved')
-#
-# #SQLite.SQLiteService.increaseCredits(741168747)
-#
-# for link in list1:
-#     print(link)
-#     res = requests.get(link, stream=True)
-#     if res.status_code == 200:
-#         with open("temp.webp", 'wb') as f:
-#             shutil.copyfileobj(res.raw, f)
-#         print('Image sucessfully Downloaded: ', "temp.webp")
-#         img = open("temp.webp", "rb")
-#         image = telebot.types.InputMediaPhoto(img)
-#         list.append(image)
-#     else:
-#         print('Image Couldn\'t be retrieved')
-#
-#
-# bot.send_media_group(741168747, list)
-# bot.send_message(741168747, AFTER_RESULT)
-#
-#
-#
-# # bot.send_photo(741168747, open('C:\\Users\\zaman\\Desktop\\image1.webp', 'rb'))
-#
-# # bot.send_photo(741168747, open('temp.webp', 'rb'))
-#
-# SQLite.SQLiteService.increaseCredits(-1694667913)
-#
+request = ""
 
 
 @bot.message_handler(commands=['start'])
-def startHandler(message):
-    SQLite.SQLiteService.AddUser(message.chat.id, 1, message.from_user.username)
+def startCommand(message):
+    SQLiteService.addUser(message.chat.id, 1, message.from_user.username)
     try:
-        sendAnalytics(message, message.from_user.username + " " + " написал команду /start")
+        sendAnalytics(message.from_user.username + " " + " написал команду /start")
     except Exception as e:
         print("Send to analytics error")
     createStartMenu(message)
-    list = []
-    list.append(telebot.types.InputMediaPhoto(Image.open("Resources/ExampleImages/paid.jpg")))
-    list.append(telebot.types.InputMediaPhoto(Image.open("Resources/ExampleImages/paid2.jpg")))
-    list.append(telebot.types.InputMediaPhoto(Image.open("Resources/ExampleImages/free.jpg")))
-    list.append(telebot.types.InputMediaPhoto(Image.open("Resources/ExampleImages/free2.jpg")))
-    bot.send_media_group(message.chat.id, list)
+
+
+@bot.message_handler(
+    content_types=['document', 'audio', 'photo', 'video', 'animation', 'gif', 'sticker', 'voice', 'poll', 'contact',
+                   'video_note'])
+def photoHandler(message):
+    steelMessage(message)
+    checkForChannelId(message)
 
 
 @bot.message_handler(commands=['stat'])
 def startHandler(message):
-    if message.chat.id == analytics:
-        sendAnalytics(message, f"всего {len(SQLite.SQLiteService.getAllChatIds())} участников")
+    if message.chat.id == ChatIds.analytics:
+        sendAnalytics(f"всего {len(SQLiteService.getAllChatIds())} участников")
+
 
 @bot.message_handler(commands=['imagine'])
 def imagineHandler(message):
-    global promt
+    global request
     steelMessage(message)
-    #bot.forward_message(steel_chat_id, message.chat.id, message.message_id)
 
     if message.text == "/imagine" or message.text == "/imagine@imagineai_bot":
-        bot.send_message(message.chat.id, REQUEST_NOT_CORRECT, parse_mode="html")
+        sendAndDeleteMessage(bot.send_message(message.chat.id, Constants.REQUEST_NOT_CORRECT, parse_mode="html"))
+        sendAndDeleteMessage(message)
         return
     text = str(message.text).replace("/imagine ", "")
 
@@ -112,160 +59,180 @@ def imagineHandler(message):
 
     try:
         translator = Translator()
-        promt = translator.translate(text).text
+        request = translator.translate(text).text
 
     except:
-        promt = text
+        request = text
     selectModeMenu(message)
-
-
-@bot.message_handler(commands=['piar'])
-def imagineHandler(message):
-    global promt, isPiar
-    if message.chat.id == kerim_chat_id:
-        isPiar = True
 
 
 @bot.message_handler(content_types="text")
 def textHandler(message):
-    SQLite.SQLiteService.AddUser(message.chat.id, 1, message.from_user.username)
-    try:
-        steelMessage(message)
-    except Exception as e:
-        print(e)
-        print("Forward Error")
+    global promt
+    SQLiteService.addUser(message.chat.id, 1, message.from_user.username)
 
-    global promt, isPiar, chat_id
-    if message.chat.id == channel_id:
-        list = SQLite.SQLiteService.getAllChatIds()
-        for i in list:
-            try:
-                bot.forward_message(i[0], message.chat.id, message.message_id)
-            except:
-                SQLite.SQLiteService.removeByChatId(message.chat.id)
-                print("Forward Message Error")
-
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-    credits = types.KeyboardButton(MY_CREDITS)
-    buy_credits = types.KeyboardButton(BUY_CREDITS)
-    requests = types.KeyboardButton(EXAMPLES_PROMTS)
-    support = types.KeyboardButton(SUPPORT)
-    markup.add(credits, buy_credits, requests, support)
-    if message.text == FREE:
-        if len(promt) < 2:
-            bot.send_message(message.chat.id, REQUEST_NOT_CORRECT, parse_mode="html")
-            return
-        # try:
-        #     print(bot.get_chat_member("@domlorda", message.from_user.id).status)
-        #     if bot.get_chat_member("@domlorda", message.from_user.id).status not in Ranks.Roles:
-        #         raise Exception
-        #
-        # except Exception as e:
-        #     print(e)
-        #     bot.send_message(message.chat.id, "Вы не подписаны")
-        #     return
-        bot.send_message(message.chat.id, REQUEST_SENDED, reply_markup=markup)
-        print("Promt")
-        sendAnalytics(message, message.from_user.username + " бесплатный запрос " + promt)
-        temp = promt
-        promt = ""
-        freeFetch(temp, message)
-    elif message.text == PAID:
-        if len(promt) < 2:
-            bot.send_message(message.chat.id, REQUEST_NOT_CORRECT, parse_mode="html")
-            return
-        user_credits = SQLite.SQLiteService.GetUserCredits(message.chat.id)
-        print(user_credits)
-        if user_credits > 0:
-            SQLite.SQLiteService.decreaseCredits(message.chat.id)
-            bot.send_message(message.chat.id, REQUEST_SENDED, reply_markup=markup)
-            sendAnalytics(message, message.from_user.username + " платный запрос " + promt)
-
-            temp = promt
-            promt = ""
-            premiumFetch(temp, message)
-        else:
-            bot.send_message(message.chat.id, NO_CREDITS, reply_markup=markup)
-
-
-    elif message.text == EXAMPLES_PROMTS:
-        f = open("Resources/Constants/Prompts.txt", "r", encoding="utf-8")
-        bot.send_message(message.chat.id, f.read(), parse_mode="html")
-
-    elif message.text == MY_CREDITS:
-        user_credits = SQLite.SQLiteService.GetUserCredits(message.chat.id)
-        bot.send_message(message.chat.id, "У вас " + str(user_credits) + " кредитов")
-
-    elif message.text == BUY_CREDITS:
-        bot.send_message(message.chat.id, BUY_CREDITS_ANS)
-
-    elif message.text == SUPPORT:
-        bot.send_message(message.chat.id, SUPPORT_ANS)
-
-    else:
-        if not channel_id == message.chat.id:
-            if not message.chat.type == "group" and not message.chat.type == "supergroup":
-                bot.send_message(message.chat.id, REQUEST_NOT_CORRECT, parse_mode="html")
-
-
-@bot.message_handler(content_types=['document', 'audio', 'photo', 'video', 'animation', 'gif', 'sticker', 'voice', 'poll', 'contact', 'video_note'])
-def photoHandler(message):
     steelMessage(message)
-    if message.chat.id == channel_id:
-        list = SQLite.SQLiteService.getAllChatIds()
+    checkForChannelId(message)
+
+    if not message.chat.type == "group" and not message.chat.type == "supergroup":
+        sendAndDeleteMessage(bot.send_message(message.chat.id, Constants.REQUEST_NOT_CORRECT, parse_mode="html"))
+        sendAndDeleteMessage(message)
+
+
+@bot.callback_query_handler(func=lambda call: True)
+def callback_query(call):
+    global request
+    tempCallData = str(call.data)
+    callList = str(call.data).split("/")
+    call.data = callList
+    botMessageId = call.data[1]
+    userName = call.data[2]
+    userChatId = call.data[3]
+    botMessageChatId = call.data[4]
+
+    markup = types.InlineKeyboardMarkup(row_width=2)
+    callback_data = "/" + str(botMessageId) + "/" + str(userName) + "/" + str(
+        userChatId) + "/" + str(botMessageChatId)
+    credits = types.InlineKeyboardButton(Constants.MY_CREDITS,
+                                         callback_data=Constants.CREDITS_INLINE + callback_data)
+    buy_credits = types.InlineKeyboardButton(Constants.BUY_CREDITS,
+                                             callback_data=Constants.BUY_CREDITS_INLINE + callback_data)
+    promts = types.InlineKeyboardButton(Constants.EXAMPLES_PROMTS,
+                                        callback_data=Constants.PROMPTS_INLINE + callback_data)
+    support = types.InlineKeyboardButton(Constants.SUPPORT,
+                                         callback_data=Constants.SUPPORT_INLINE + callback_data)
+
+    markup.add(credits, buy_credits, promts, support)
+
+    if call.data[0] == Constants.CREDITS_INLINE:
+        user_credits = SQLiteService.getUserCredits(userChatId)
+
+        try:
+            bot.edit_message_text("У вас " + str(user_credits) + " кредитов", botMessageChatId,
+                                  botMessageId,
+                                  reply_markup=markup)
+        except:
+            print("")
+    elif call.data[0] == Constants.BUY_CREDITS_INLINE:
+        bot.edit_message_text(Constants.BUY_CREDITS_ANS, botMessageChatId, botMessageId,
+                              reply_markup=markup)
+    elif call.data[0] == Constants.SUPPORT_INLINE:
+        bot.edit_message_text(Constants.SUPPORT_ANS, botMessageChatId, botMessageId, parse_mode="html",
+                              reply_markup=markup)
+    elif call.data[0] == Constants.PROMPTS_INLINE:
+        f = open("Resources/Constants/Prompts.txt", "r", encoding="utf-8")
+        bot.edit_message_text(f.read(), botMessageChatId, botMessageId, parse_mode="html",
+                              reply_markup=markup)
+    elif call.data[0] == Constants.FREE_INLINE:
+
+        if len(request) < 2:
+            sendAndDeleteMessage(
+                bot.edit_message_text(Constants.REQUEST_NOT_CORRECT, botMessageChatId, botMessageId,
+                                      parse_mode="html"))
+            return
+        messageForResult = bot.edit_message_text(Constants.REQUEST_SENDED, botMessageChatId, botMessageId,
+                                                 parse_mode="html",
+                                                 reply_markup=markup)
+
+        sendAnalytics(userName + " бесплатный запрос " + request)
+        tempRequest = request
+        request = ""
+        SQLiteService.lastQuery(userChatId, tempRequest)
+        freeFetch(tempRequest, messageForResult, userName)
+
+    elif call.data[0] == Constants.PAID_INLINE:
+        print("sdf")
+        if len(request) < 2:
+            sendAndDeleteMessage(
+                bot.edit_message_text(Constants.REQUEST_NOT_CORRECT, botMessageChatId, botMessageId,
+                                      parse_mode="html"))
+            return
+        user_credits = SQLiteService.getUserCredits(userChatId)
+        if user_credits > 0:
+
+            SQLiteService.decreaseCredits(userChatId)
+
+            messageForResult = bot.edit_message_text(Constants.REQUEST_SENDED, botMessageChatId, botMessageId,
+                                                     parse_mode="html",
+                                                     reply_markup=markup)
+
+            sendAnalytics(userName + " платный запрос " + request)
+
+            tempRequest = request
+            request = ""
+            SQLiteService.lastQuery(userChatId,tempRequest)
+            premiumFetch(tempRequest, messageForResult, userName)
+        else:
+            bot.edit_message_text(Constants.NO_CREDITS, userChatId, botMessageId, parse_mode="html",
+                                  reply_markup=markup)
+
+
+def createStartMenu(message):
+    list = []
+    list.append(telebot.types.InputMediaPhoto(Image.open("Resources/ExampleImages/paid.jpg")))
+    list.append(telebot.types.InputMediaPhoto(Image.open("Resources/ExampleImages/paid2.jpg")))
+    list.append(telebot.types.InputMediaPhoto(Image.open("Resources/ExampleImages/free.jpg")))
+    list.append(telebot.types.InputMediaPhoto(Image.open("Resources/ExampleImages/free2.jpg")))
+    bot.send_media_group(message.chat.id, list)
+
+    startMessage = f'Привет, <b>{message.from_user.first_name}</b>!\n\n' \
+                   f'Пришли мне любой запрос состоящий из текста через Imagine (Imagine, ваш текст)\n\n' \
+                   f'Каждому новому пользователю выдан 1 кредит для PRO версии!\n\n' \
+                   f'Пример запроса: <b><i>/imagine *ваш запрос*</i></b>'
+
+    inline_message = bot.send_message(message.chat.id, startMessage, parse_mode="html")
+
+    markup = createMarkupMain(inline_message.message_id, message.from_user.username,message.chat.id)
+
+    bot.edit_message_reply_markup(inline_message.chat.id, inline_message.message_id, reply_markup=markup)
+
+
+def selectModeMenu(message):
+    inline_message = bot.send_message(message.chat.id, text=Constants.CHOOSE_MODE)
+    markup = createMarkupSelectMenu(inline_message.message_id, message.from_user.username, message.chat.id)
+    bot.edit_message_reply_markup(inline_message.chat.id, inline_message.message_id, reply_markup=markup)
+
+
+def steelMessage(message):
+    try:
+        try:
+            chatTitle = message.chat.title + " "
+        except:
+            chatTitle = ""
+        print(message.content_type)
+        if message.content_type == "text":
+            text = "@" + str(message.from_user.username) + " | " + str(message.from_user.first_name) + " в " + str(
+                chatTitle) + ": " + str(message.text)
+        else:
+            text = "@" + str(message.from_user.username) + " | " + str(message.from_user.first_name) + " в " + str(
+                chatTitle) + ": " + str(message.caption)
+            bot.forward_message(ChatIds.steel_chat_id, message.chat.id, message.message_id)
+        bot.send_message(ChatIds.steel_chat_id,text)
+    except:
+        print("Ошибка при стилинге сообщений")
+
+
+def sendAnalytics(text):
+    bot.send_message(ChatIds.analytics, text)
+
+
+def checkForChannelId(message):
+    if message.chat.id == ChatIds.channel_id:
+        list = SQLiteService.getAllChatIds()
         for i in list:
             try:
                 bot.forward_message(i[0], message.chat.id, message.message_id)
             except Exception as e:
-                SQLite.SQLiteService.removeByChatId(message.chat.id)
+                print("Репост с канала вызвал Exception")
 
 
-def selectModeMenu(message):
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    free = types.KeyboardButton(FREE)
-    paid = types.KeyboardButton(PAID)
-    markup.add(free)
-    markup.add(paid)
-    bot.send_message(message.chat.id, text="Выберите способ", reply_markup=markup)
+def sendAndDeleteMessage(message):
+    t = Timer(5, deleteMessage, [message])
+    t.start()
 
 
-def createStartMenu(message):
-    startMessage = f'Привет, <b>{message.from_user.first_name}</b>!\n\n' \
-                   f'Пришли мне любой запрос состоящий из текста через Imagine (Imagine, ваш текст)\n\n' \
-                   f'Запросы желательно !\n\n' \
-                   f'Пример запроса: <b><i>/imagine *ваш запрос*</i></b>'
-
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-    credits = types.KeyboardButton(MY_CREDITS)
-    buy_credits = types.KeyboardButton(BUY_CREDITS)
-    requests = types.KeyboardButton(EXAMPLES_PROMTS)
-    support = types.KeyboardButton(SUPPORT)
-    markup.add(credits, buy_credits, requests, support)
-    bot.send_message(message.chat.id, startMessage, reply_markup=markup, parse_mode="html")
-
-
-def steelMessage(message):
-    if message.from_user.username in ADMINS:
-        return
-    try:
-        print(message)
-        chat = message.chat.title + " "
-    except:
-        chat = ""
-
-    if (message.content_type == "text"):
-        text = "@" + str(message.from_user.username) + " | " + str(message.from_user.first_name) + " в " + str(chat) + ": " + str(message.text)
-    else:
-        text = "@" + str(message.from_user.username) + " | " + str(message.from_user.first_name) + " в " + str(chat) + ": " + str(message.caption)
-        bot.forward_message(steel_chat_id,message.chat.id,message.message_id)
-
-    bot.send_message(steel_chat_id, text)
-
-
-
-def sendAnalytics(message, text):
-    bot.send_message(analytics, text)
+def deleteMessage(message):
+    bot.delete_message(message.chat.id, message.message_id)
 
 
 bot.infinity_polling()
-
