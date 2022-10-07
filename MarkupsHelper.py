@@ -22,11 +22,12 @@ def createMarkupMain(inlineMessageId, username, chatId):
 def createMarkupSelectMenu(inlineMessageId, username, chatId):
     callback_data = "/" + str(inlineMessageId) + "/" + str(username) + "/" + str(chatId) + "/" + str(chatId)
 
-    markup = types.InlineKeyboardMarkup(row_width=2)
+    markup = types.InlineKeyboardMarkup(row_width=1)
 
     free = types.InlineKeyboardButton(Constants.FREE, callback_data=Constants.FREE_INLINE + callback_data)
     paid = types.InlineKeyboardButton(Constants.PAID, callback_data=Constants.PAID_INLINE + callback_data)
+    openArt = types.InlineKeyboardButton(Constants.OPENART, callback_data=Constants.OPENART_INLINE + callback_data)
 
-    markup.add(free, paid)
+    markup.add(free, paid,openArt)
 
     return markup

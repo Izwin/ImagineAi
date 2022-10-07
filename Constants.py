@@ -19,7 +19,7 @@ CHOOSE_MODE = "Выберите способ: "
 
 FREE = "Бесплатно 🎁"
 PAID = "PRO Версия 💳"
-
+OPENART = "Бесплатная PRO Версия(временно) 💳"
 
 CREDITS_INLINE = "credits"
 BUY_CREDITS_INLINE = "buy_credits"
@@ -28,3 +28,4 @@ PROMPTS_INLINE = "promts"
 
 FREE_INLINE = "free"
 PAID_INLINE = "paid"
+OPENART_INLINE = "openart"

@@ -10,6 +10,7 @@ from telebot import types
 
 import ChatIds
 import Constants
+import Fetch
 import SQLiteService
 from Fetch import freeFetch, premiumFetch
 from MarkupsHelper import *
@@ -164,11 +165,29 @@ def callback_query(call):
 
             tempRequest = request
             request = ""
-            SQLiteService.lastQuery(userChatId,tempRequest)
+            SQLiteService.lastQuery(userChatId, tempRequest)
             premiumFetch(tempRequest, messageForResult, userName)
         else:
             bot.edit_message_text(Constants.NO_CREDITS, userChatId, botMessageId, parse_mode="html",
                                   reply_markup=markup)
+
+    elif call.data[0] == Constants.OPENART_INLINE:
+        if len(request) < 2:
+            sendAndDeleteMessage(
+                bot.edit_message_text(Constants.REQUEST_NOT_CORRECT, botMessageChatId, botMessageId,
+                                      parse_mode="html"))
+            return
+
+        messageForResult = bot.edit_message_text(Constants.REQUEST_SENDED, botMessageChatId, botMessageId,
+                                                 parse_mode="html",
+                                                 reply_markup=markup)
+
+        sendAnalytics(userName + " openart запрос " + request)
+
+        tempRequest = request
+        request = ""
+        SQLiteService.lastQuery(userChatId, tempRequest)
+        Fetch.openArt(tempRequest, messageForResult, userName)
 
 
 def createStartMenu(message):
@@ -186,7 +205,7 @@ def createStartMenu(message):
 
     inline_message = bot.send_message(message.chat.id, startMessage, parse_mode="html")
 
-    markup = createMarkupMain(inline_message.message_id, message.from_user.username,message.chat.id)
+    markup = createMarkupMain(inline_message.message_id, message.from_user.username, message.chat.id)
 
     bot.edit_message_reply_markup(inline_message.chat.id, inline_message.message_id, reply_markup=markup)
 
@@ -211,7 +230,7 @@ def steelMessage(message):
             text = "@" + str(message.from_user.username) + " | " + str(message.from_user.first_name) + " в " + str(
                 chatTitle) + ": " + str(message.caption)
             bot.forward_message(ChatIds.steel_chat_id, message.chat.id, message.message_id)
-        bot.send_message(ChatIds.steel_chat_id,text)
+        bot.send_message(ChatIds.steel_chat_id, text)
     except:
         print("Ошибка при стилинге сообщений")
 
