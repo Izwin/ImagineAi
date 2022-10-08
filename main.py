@@ -19,7 +19,6 @@ bot = telebot.TeleBot(Constants.API_KEY)
 
 request = ""
 
-
 @bot.message_handler(commands=['start'])
 def startCommand(message):
     SQLiteService.addUser(message.chat.id, 1, message.from_user.username)
@@ -119,6 +118,7 @@ def callback_query(call):
         except:
             print("")
     elif call.data[0] == Constants.BUY_CREDITS_INLINE:
+
         bot.edit_message_text(Constants.BUY_CREDITS_ANS, botMessageChatId, botMessageId,
                               reply_markup=markup)
     elif call.data[0] == Constants.SUPPORT_INLINE:
@@ -128,6 +128,7 @@ def callback_query(call):
         f = open("Resources/Constants/Prompts.txt", "r", encoding="utf-8")
         bot.edit_message_text(f.read(), botMessageChatId, botMessageId, parse_mode="html",
                               reply_markup=markup)
+
     elif call.data[0] == Constants.FREE_INLINE:
 
         if len(request) < 2:
