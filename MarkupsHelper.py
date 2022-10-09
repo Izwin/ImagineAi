@@ -15,7 +15,10 @@ def createMarkupMain(inlineMessageId, username, chatId):
     support = types.InlineKeyboardButton(Constants.SUPPORT,
                                          callback_data=Constants.SUPPORT_INLINE + callback_data)
 
-    markup.add(credits, buy_credits, promts, support)
+    ad = types.InlineKeyboardButton("Анонимный чат",
+                                         "https://t.me/Anononimuschat_bot")
+
+    markup.add(credits, buy_credits, promts, support,ad)
     return markup
 
 
