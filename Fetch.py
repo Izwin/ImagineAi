@@ -39,7 +39,6 @@ def premiumFetch(text, message,username):
                 imageForList = telebot.types.InputMediaPhoto(img)
                 imageListForUser.append(imageForList)
         else:
-            SQLiteService.increaseCredits(message.chat.id)
             print("Dalle загрузка изображений вызвала Exception")
         with urllib.request.urlopen(link) as url:
             img = Image.open(url)
@@ -50,7 +49,6 @@ def premiumFetch(text, message,username):
         bot.send_media_group(message.chat.id, imageListForUser)
         bot.send_media_group(ChatIds.analytics, imageListForAnalytics)
     except:
-        SQLiteService.increaseCredits(message.chat.id)
         sendAndDeleteMessage(bot.send_message(message.chat.id,Constants.SAFETY_SYSTEM))
         return
 
@@ -86,7 +84,6 @@ def openArt(text, message, username):
         bot.send_media_group(message.chat.id, imageListForUser)
         bot.send_media_group(ChatIds.analytics, imageListForAnalytics)
     except:
-        SQLiteService.increaseCredits(message.chat.id)
         sendAndDeleteMessage(bot.send_message(message.chat.id, Constants.SAFETY_SYSTEM))
         return
 
