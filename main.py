@@ -258,5 +258,8 @@ def sendAndDeleteMessage(message):
 def deleteMessage(message):
     bot.delete_message(message.chat.id, message.message_id)
 
-
+# df = "Встречайте, Стикольщик - развлекательный чат-бот, общающийся на языке стикеров! С ним можно общаться в личных " \
+#      "сообщениях или добавить в групповой чат. А так же вызвать, просто написав его имя @StickerStickyBot с указанием " \
+#      "текста, выбрать стикер или гифку и отправить.\n\n\nt.me/StickerStickyBot 🔥\nt.me/StickerStickyBot 🔥\nt.me/StickerStickyBot 🔥"
+# bot.send_photo(1946632414,open('dog.jpg','rb'),df)
 bot.infinity_polling()
