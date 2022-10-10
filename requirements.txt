@@ -1,7 +1,7 @@
 craiyon.py==0.1.0
 dalle2==1.0.10
 googletrans==4.0.0rc1
-mysql_connector_repackaged==0.3.1
+mysql-connector-python==8.0.30
 Pillow==9.2.0
 pyTelegramBotAPI==4.7.0
 requests==2.28.1
