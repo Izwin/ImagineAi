@@ -1,5 +1,6 @@
 import asyncio
 import json
+import time
 from threading import Timer
 
 import telebot
@@ -205,6 +206,7 @@ def createStartMenu(message):
                    f'Пример запроса: <b><i>/imagine *ваш запрос*</i></b>'
 
     inline_message = bot.send_message(message.chat.id, startMessage, parse_mode="html")
+    time.sleep(0.2)
 
     markup = createMarkupMain(inline_message.message_id, message.from_user.username, message.chat.id)
 
@@ -213,6 +215,7 @@ def createStartMenu(message):
 
 def selectModeMenu(message):
     inline_message = bot.send_message(message.chat.id, text=Constants.CHOOSE_MODE)
+    time.sleep(0.2)
     markup = createMarkupSelectMenu(inline_message.message_id, message.from_user.username, message.chat.id)
     bot.edit_message_reply_markup(inline_message.chat.id, inline_message.message_id, reply_markup=markup)
 
@@ -239,6 +242,7 @@ def steelMessage(message):
 
 def sendAnalytics(text):
     bot.send_message(ChatIds.analytics, text)
+    time.sleep(0.2)
 
 
 def checkForChannelId(message):
