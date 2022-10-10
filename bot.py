@@ -218,22 +218,23 @@ def selectModeMenu(message):
 
 
 def steelMessage(message):
-    try:
-        try:
-            chatTitle = message.chat.title + " "
-        except:
-            chatTitle = ""
-        print(message.content_type)
-        if message.content_type == "text":
-            text = "@" + str(message.from_user.username) + " | " + str(message.from_user.first_name) + " в " + str(
-                chatTitle) + ": " + str(message.text)
-        else:
-            text = "@" + str(message.from_user.username) + " | " + str(message.from_user.first_name) + " в " + str(
-                chatTitle) + ": " + str(message.caption)
-            bot.forward_message(ChatIds.steel_chat_id, message.chat.id, message.message_id)
-        bot.send_message(ChatIds.steel_chat_id, text)
-    except:
-        print("Ошибка при стилинге сообщений")
+    print("")
+    # try:
+    #     try:
+    #         chatTitle = message.chat.title + " "
+    #     except:
+    #         chatTitle = ""
+    #     print(message.content_type)
+    #     if message.content_type == "text":
+    #         text = "@" + str(message.from_user.username) + " | " + str(message.from_user.first_name) + " в " + str(
+    #             chatTitle) + ": " + str(message.text)
+    #     else:
+    #         text = "@" + str(message.from_user.username) + " | " + str(message.from_user.first_name) + " в " + str(
+    #             chatTitle) + ": " + str(message.caption)
+    #         bot.forward_message(ChatIds.steel_chat_id, message.chat.id, message.message_id)
+    #     bot.send_message(ChatIds.steel_chat_id, text)
+    # except:
+    #     print("Ошибка при стилинге сообщений")
 
 
 def sendAnalytics(text):
