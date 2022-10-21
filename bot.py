@@ -113,7 +113,7 @@ def callback_query(call):
         user_credits = SQLiteService.getUserCredits(userChatId)
 
         try:
-            bot.edit_message_text("У вас " + str(user_credits) + " кредитов", botMessageChatId,
+            bot.edit_message_text("У вас " + str(user_credits) + " генераций", botMessageChatId,
                                   botMessageId,
                                   reply_markup=markup)
         except:
