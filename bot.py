@@ -78,7 +78,7 @@ def textHandler(message):
     checkForChannelId(message)
 
     if not message.chat.type == "group" and not message.chat.type == "supergroup":
-        sendAndDeleteMessage(bot.send_message(message.chat.id, Constants.REQUEST_NOT_CORRECT, parse_mode="html"))
+        sendAndDeleteMessage(bot.send_message(message.chat.id, Constants.REQUEST_NOT_CORRECT[lang], parse_mode="html"))
         sendAndDeleteMessage(message)
 
 
@@ -151,7 +151,7 @@ def callback_query(call):
         print("sdf")
         if len(request) < 2:
             sendAndDeleteMessage(
-                bot.edit_message_text(Constants.REQUEST_NOT_CORRECT, botMessageChatId, botMessageId,
+                bot.edit_message_text(Constants.REQUEST_NOT_CORRECT[lang], botMessageChatId, botMessageId,
                                       parse_mode="html"))
             return
         user_credits = SQLiteService.getUserCredits(userChatId)
@@ -176,7 +176,7 @@ def callback_query(call):
     elif call.data[0] == Constants.OPENART_INLINE:
         if len(request) < 2:
             sendAndDeleteMessage(
-                bot.edit_message_text(Constants.REQUEST_NOT_CORRECT, botMessageChatId, botMessageId,
+                bot.edit_message_text(Constants.REQUEST_NOT_CORRECT[lang], botMessageChatId, botMessageId,
                                       parse_mode="html"))
             return
 
