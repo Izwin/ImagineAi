@@ -12,6 +12,7 @@ from telebot import types
 import ChatIds
 import Constants
 import Fetch
+import MarkupsHelper
 import SQLiteService
 from Fetch import freeFetch, premiumFetch
 from MarkupsHelper import *
@@ -19,6 +20,7 @@ from MarkupsHelper import *
 bot = telebot.TeleBot(Constants.API_KEY)
 
 request = ""
+lang = ""
 
 @bot.message_handler(commands=['start'])
 def startCommand(message):
@@ -50,7 +52,7 @@ def imagineHandler(message):
     steelMessage(message)
 
     if message.text == "/imagine" or message.text == "/imagine@imagineai_bot":
-        sendAndDeleteMessage(bot.send_message(message.chat.id, Constants.REQUEST_NOT_CORRECT, parse_mode="html"))
+        sendAndDeleteMessage(bot.send_message(message.chat.id, Constants.REQUEST_NOT_CORRECT[lang], parse_mode="html"))
         sendAndDeleteMessage(message)
         return
     text = str(message.text).replace("/imagine ", "")
@@ -82,48 +84,46 @@ def textHandler(message):
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
-    global request
+    global request,lang
     tempCallData = str(call.data)
     callList = str(call.data).split("/")
-    call.data = callList
+    call.data = callList;
+
 
     try:
         botMessageId = call.data[1]
         userName = call.data[2]
         userChatId = call.data[3]
         botMessageChatId = call.data[4]
+        if lang== "":
+            lang = SQLiteService.getUserLanguage(botMessageChatId)
+
     except:
         print("Error")
 
-    markup = types.InlineKeyboardMarkup(row_width=2)
-    callback_data = "/" + str(botMessageId) + "/" + str(userName) + "/" + str(
-        userChatId) + "/" + str(botMessageChatId)
-    credits = types.InlineKeyboardButton(Constants.MY_CREDITS,
-                                         callback_data=Constants.CREDITS_INLINE + callback_data)
-    buy_credits = types.InlineKeyboardButton(Constants.BUY_CREDITS,
-                                             callback_data=Constants.BUY_CREDITS_INLINE + callback_data)
-    promts = types.InlineKeyboardButton(Constants.EXAMPLES_PROMTS,
-                                        callback_data=Constants.PROMPTS_INLINE + callback_data)
-    support = types.InlineKeyboardButton(Constants.SUPPORT,
-                                         callback_data=Constants.SUPPORT_INLINE + callback_data)
-
-    markup.add(credits, buy_credits, promts, support)
+    markup = createMarkupMain(botMessageId, userName, botMessageChatId)
 
     if call.data[0] == Constants.CREDITS_INLINE:
         user_credits = SQLiteService.getUserCredits(userChatId)
 
         try:
-            bot.edit_message_text("У вас " + str(user_credits) + " генераций", botMessageChatId,
-                                  botMessageId,
-                                  reply_markup=markup)
+            if lang == "ru":
+                bot.edit_message_text("У вас " + str(user_credits) + " генераций", botMessageChatId,
+                                      botMessageId,
+                                      reply_markup=markup)
+            elif lang == "en":
+                bot.edit_message_text("You have " + str(user_credits) + " generations", botMessageChatId,
+                                      botMessageId,
+                                      reply_markup=markup)
+
         except:
             print("")
     elif call.data[0] == Constants.BUY_CREDITS_INLINE:
 
-        bot.edit_message_text(Constants.BUY_CREDITS_ANS, botMessageChatId, botMessageId,
+        bot.edit_message_text(Constants.BUY_CREDITS_ANS[lang], botMessageChatId, botMessageId,
                               reply_markup=markup)
     elif call.data[0] == Constants.SUPPORT_INLINE:
-        bot.edit_message_text(Constants.SUPPORT_ANS, botMessageChatId, botMessageId, parse_mode="html",
+        bot.edit_message_text(Constants.SUPPORT_ANS[lang], botMessageChatId, botMessageId, parse_mode="html",
                               reply_markup=markup)
     elif call.data[0] == Constants.PROMPTS_INLINE:
         f = open("Resources/Constants/Prompts.txt", "r", encoding="utf-8")
@@ -134,10 +134,10 @@ def callback_query(call):
 
         if len(request) < 2:
             sendAndDeleteMessage(
-                bot.edit_message_text(Constants.REQUEST_NOT_CORRECT, botMessageChatId, botMessageId,
+                bot.edit_message_text(Constants.REQUEST_NOT_CORRECT[lang], botMessageChatId, botMessageId,
                                       parse_mode="html"))
             return
-        messageForResult = bot.edit_message_text(Constants.REQUEST_SENDED, botMessageChatId, botMessageId,
+        messageForResult = bot.edit_message_text(Constants.REQUEST_SENDED[lang], botMessageChatId, botMessageId,
                                                  parse_mode="html",
                                                  reply_markup=markup)
 
@@ -159,7 +159,7 @@ def callback_query(call):
 
             SQLiteService.decreaseCredits(userChatId)
 
-            messageForResult = bot.edit_message_text(Constants.REQUEST_SENDED, botMessageChatId, botMessageId,
+            messageForResult = bot.edit_message_text(Constants.REQUEST_SENDED[lang], botMessageChatId, botMessageId,
                                                      parse_mode="html",
                                                      reply_markup=markup)
 
@@ -180,7 +180,7 @@ def callback_query(call):
                                       parse_mode="html"))
             return
 
-        messageForResult = bot.edit_message_text(Constants.REQUEST_SENDED, botMessageChatId, botMessageId,
+        messageForResult = bot.edit_message_text(Constants.REQUEST_SENDED[lang], botMessageChatId, botMessageId,
                                                  parse_mode="html",
                                                  reply_markup=markup)
 
@@ -192,6 +192,20 @@ def callback_query(call):
         Fetch.openArt(tempRequest, messageForResult, userName)
 
 
+    elif call.data[0] == Constants.SELECT_INLINE:
+        print(lang)
+        bot.edit_message_text(Constants.CHOOSE_LANGUAGE[lang], botMessageChatId, botMessageId)
+        markup = MarkupsHelper.createLanguageSelectMenu(botMessageId, userName, botMessageChatId)
+        bot.edit_message_reply_markup(botMessageChatId, botMessageId, reply_markup=markup)
+    elif call.data[0] == Constants.RUSSIAN_INLINE:
+        SQLiteService.setLanguage(botMessageChatId,"ru")
+        bot.edit_message_text(Constants.LANGUAGE_CHANGED["ru"],botMessageChatId,botMessageId)
+    elif call.data[0] == Constants.ENGLISH_INLINE:
+        SQLiteService.setLanguage(botMessageChatId,"en")
+        bot.edit_message_text(Constants.LANGUAGE_CHANGED["en"],botMessageChatId,botMessageId)
+
+
+
 def createStartMenu(message):
     list = []
     list.append(telebot.types.InputMediaPhoto(Image.open("Resources/ExampleImages/paid.jpg")))
@@ -200,10 +214,18 @@ def createStartMenu(message):
     list.append(telebot.types.InputMediaPhoto(Image.open("Resources/ExampleImages/free2.jpg")))
     bot.send_media_group(message.chat.id, list)
 
-    startMessage = f'Привет, <b>{message.from_user.first_name}</b>!\n\n' \
+    lang = SQLiteService.getUserLanguage(message.chat.id)
+    startMessage = "error"
+    if lang == "ru":
+        startMessage = f'Привет, <b>{message.from_user.first_name}</b>!\n\n' \
                    f'Пришли мне любой запрос состоящий из текста через Imagine (Imagine, ваш текст)\n\n' \
-                   f'Каждому новому пользователю выдан 1 кредит для PRO версии!\n\n' \
+                   f'Каждому новому пользователю выдана 1 генерация для PRO версии!\n\n' \
                    f'Пример запроса: <b><i>/imagine *ваш запрос*</i></b>'
+    elif lang == "en":
+        startMessage = f'Hello, <b>{message.from_user.first_name}</b>!\n\n' \
+                       f'Send me any text request via Imagine (Imagine, your request)\n\n' \
+                       f'Each new user is given 1 generation for the PRO version!\n\n' \
+                       f'Request example: <b><i>/imagine *your request*</i></b>'
 
     inline_message = bot.send_message(message.chat.id, startMessage, parse_mode="html")
 
@@ -213,13 +235,21 @@ def createStartMenu(message):
     time.sleep(0.2)
 
 
-
 def selectModeMenu(message):
-    inline_message = bot.send_message(message.chat.id, text=Constants.CHOOSE_MODE)
+    global lang
+    if lang=="":
+        lang = SQLiteService.getUserLanguage(message.chat.id)
+    inline_message = bot.send_message(message.chat.id, text=Constants.CHOOSE_MODE[lang])
     markup = createMarkupSelectMenu(inline_message.message_id, message.from_user.username, message.chat.id)
     bot.edit_message_reply_markup(inline_message.chat.id, inline_message.message_id, reply_markup=markup)
     time.sleep(0.2)
 
+
+def selectLanguageMenu(chatId, username):
+    inline_message = bot.send_message(chatId, text=Constants.SELECT_LANGUAGE)
+    markup = createLanguageSelectMenu(inline_message.message_id, username, chatId)
+    bot.edit_message_reply_markup(inline_message.chat.id, inline_message.message_id, reply_markup=markup)
+    time.sleep(0.2)
 
 
 def steelMessage(message):
@@ -264,6 +294,7 @@ def sendAndDeleteMessage(message):
 
 def deleteMessage(message):
     bot.delete_message(message.chat.id, message.message_id)
+
 
 # df = "Встречайте, Стикольщик - развлекательный чат-бот, общающийся на языке стикеров! С ним можно общаться в личных " \
 #      "сообщениях или добавить в групповой чат. А так же вызвать, просто написав его имя @StickerStickyBot с указанием " \

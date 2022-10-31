@@ -65,6 +65,31 @@ def getUserCredits(chatId):
         Conn.close()
 
 
+
+def getUserLanguage(chatId):
+
+    try:
+        Conn = mysql.connector.connect(
+            host=DB_credits.HOST,
+            user=DB_credits.USER,
+            password=DB_credits.PASSWORD,
+            database=DB_credits.DATABASE
+        )
+        cur = Conn.cursor()
+
+        state = "SELECT Language FROM Users WHERE ChatId = " + str(chatId)
+
+        cur.execute(state)
+
+        return cur.fetchall()[0][0]
+    except Error as e:
+        print(e)
+    finally:
+        cur.close()
+        Conn.close()
+
+
+
 def getAll():
     try:
         Conn = mysql.connector.connect(
@@ -170,6 +195,27 @@ def increaseCredits(chatId):
         Conn.close()
 
 
+def setLanguage(chatId,lang):
+    try:
+        Conn = mysql.connector.connect(
+            host=DB_credits.HOST,
+            user=DB_credits.USER,
+            password=DB_credits.PASSWORD,
+            database=DB_credits.DATABASE
+        )
+        cur = Conn.cursor()
+
+        stat = "UPDATE Users SET Language = '" + lang + "' WHERE ChatId = " + str(chatId)
+
+        cur.execute(stat)
+
+        Conn.commit()
+    except Error as e:
+        print(e)
+    finally:
+        cur.close()
+        Conn.close()
+
 def lastQuery(chatId, lastQuery):
     try:
         Conn = mysql.connector.connect(
@@ -192,3 +238,5 @@ def lastQuery(chatId, lastQuery):
     finally:
         cur.close()
         Conn.close()
+
+
