@@ -71,7 +71,9 @@ def imagineHandler(message):
 
 @bot.message_handler(content_types="text")
 def textHandler(message):
-    global promt
+    global promt,lang
+    if lang=="":
+        lang = SQLiteService.getUserLanguage(message.chat.id)
     SQLiteService.addUser(message.chat.id, 1, message.from_user.username)
 
     steelMessage(message)
