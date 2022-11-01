@@ -47,7 +47,7 @@ AFTER_RESULT = {
 }
 
 REQUEST_NOT_CORRECT = {
-    "ru:": "⛔ Запрос был введён некорректно! Попробуйте так :\n <b><i>/imagine ваш запрос</i></b>",
+    "ru": "⛔ Запрос был введён некорректно! Попробуйте так :\n <b><i>/imagine ваш запрос</i></b>",
     "en": "⛔ The request was entered incorrectly! Try like this :\n <b><i>/imagine your request</i></b>"
 }
 REQUEST_SENDED = {
