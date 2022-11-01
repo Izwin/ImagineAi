@@ -25,7 +25,7 @@ def premiumFetch(text, message,username):
     dalle = Dalle2(Constants.DALLE_SESS)
     generations = dalle.generate(text)
     urls = UrlExtractor.extractURLS(generations)
-
+    lang = SQLiteService.getUserLanguage(message.chat.id)
     imageListForUser = []
     imageListForAnalytics = []
 
@@ -54,10 +54,11 @@ def premiumFetch(text, message,username):
 
     markup = MarkupsHelper.createMarkupMain(message.message_id,username,message.chat.id)
 
-    bot.edit_message_text(Constants.AFTER_RESULT,message.chat.id,message.message_id,reply_markup=markup)
+    bot.edit_message_text(Constants.AFTER_RESULT[lang],message.chat.id,message.message_id,reply_markup=markup)
 
 
 def openArt(text, message, username):
+    lang = SQLiteService.getUserLanguage(message.chat.id)
 
     urls = UrlExtractor.extractURLS(OpenArt.getOpenArtList(text))
 
@@ -84,12 +85,12 @@ def openArt(text, message, username):
         bot.send_media_group(message.chat.id, imageListForUser)
         bot.send_media_group(ChatIds.analytics, imageListForAnalytics)
     except:
-        sendAndDeleteMessage(bot.send_message(message.chat.id, Constants.SAFETY_SYSTEM))
+        sendAndDeleteMessage(bot.send_message(message.chat.id, Constants.SAFETY_SYSTEM[lang]))
         return
 
     markup = MarkupsHelper.createMarkupMain(message.message_id, username, message.chat.id)
 
-    bot.edit_message_text(Constants.AFTER_RESULT, message.chat.id, message.message_id, reply_markup=markup)
+    bot.edit_message_text(Constants.AFTER_RESULT[lang], message.chat.id, message.message_id, reply_markup=markup)
 
 
 def freeFetch(request,message,username):
@@ -97,12 +98,14 @@ def freeFetch(request,message,username):
     result = generator.generate(request)
     images = result.images
     imageList = []
+    lang = SQLiteService.getUserLanguage(message.chat.id)
+
     for img in images:
         image = telebot.types.InputMediaPhoto(base64.decodebytes(img.encode("utf-8")))
         imageList.append(image)
 
     markup = MarkupsHelper.createMarkupMain(message.message_id,username,message.chat.id)
-    bot.edit_message_text(Constants.AFTER_RESULT,message.chat.id,message.message_id,reply_markup=markup)
+    bot.edit_message_text(Constants.AFTER_RESULT[lang],message.chat.id,message.message_id,reply_markup=markup)
 
     bot.send_media_group(message.chat.id, imageList)
     bot.send_media_group(ChatIds.analytics, imageList)

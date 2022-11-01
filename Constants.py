@@ -43,7 +43,7 @@ SAFETY_SYSTEM = {
 }
 AFTER_RESULT = {
     "ru": "Отлично! Не забудьте поделиться своими шикарными работами ❤",
-    "en": "Excellent! Don't forget to share your awesome work"
+    "en": "Excellent! Don't forget to share your awesome work ❤"
 }
 
 REQUEST_NOT_CORRECT = {
