@@ -241,6 +241,7 @@ def selectModeMenu(message):
     global lang
     if lang=="":
         lang = SQLiteService.getUserLanguage(message.chat.id)
+    print("The lang is " + lang)
     inline_message = bot.send_message(message.chat.id, text=Constants.CHOOSE_MODE[lang])
     markup = createMarkupSelectMenu(inline_message.message_id, message.from_user.username, message.chat.id)
     bot.edit_message_reply_markup(inline_message.chat.id, inline_message.message_id, reply_markup=markup)
