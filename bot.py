@@ -20,7 +20,6 @@ from MarkupsHelper import *
 bot = telebot.TeleBot(Constants.API_KEY)
 
 request = ""
-lang = ""
 
 @bot.message_handler(commands=['start'])
 def startCommand(message):
@@ -71,9 +70,8 @@ def imagineHandler(message):
 
 @bot.message_handler(content_types="text")
 def textHandler(message):
-    global promt,lang
-    if lang=="":
-        lang = SQLiteService.getUserLanguage(message.chat.id)
+    global promt
+    lang = SQLiteService.getUserLanguage(message.chat.id)
     SQLiteService.addUser(message.chat.id, 1, message.from_user.username)
 
     steelMessage(message)
@@ -86,7 +84,7 @@ def textHandler(message):
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
-    global request,lang
+    global request
     tempCallData = str(call.data)
     callList = str(call.data).split("/")
     call.data = callList;
@@ -97,8 +95,7 @@ def callback_query(call):
         userName = call.data[2]
         userChatId = call.data[3]
         botMessageChatId = call.data[4]
-        if lang== "":
-            lang = SQLiteService.getUserLanguage(botMessageChatId)
+        lang = SQLiteService.getUserLanguage(botMessageChatId)
 
     except:
         print("Error")
@@ -238,9 +235,7 @@ def createStartMenu(message):
 
 
 def selectModeMenu(message):
-    global lang
-    if lang=="":
-        lang = SQLiteService.getUserLanguage(message.chat.id)
+    lang = SQLiteService.getUserLanguage(message.chat.id)
     print("The lang is " + lang)
     inline_message = bot.send_message(message.chat.id, text=Constants.CHOOSE_MODE[lang])
     markup = createMarkupSelectMenu(inline_message.message_id, message.from_user.username, message.chat.id)
