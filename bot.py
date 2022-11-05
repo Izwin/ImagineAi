@@ -49,7 +49,10 @@ def startHandler(message):
 def imagineHandler(message):
     global request
     steelMessage(message)
+    lang = SQLiteService.getUserLanguage(message.chat.id)
 
+    if not checkForSubscribe(message,lang):
+        return
     if message.text == "/imagine" or message.text == "/imagine@imagineai_bot":
         sendAndDeleteMessage(bot.send_message(message.chat.id, Constants.REQUEST_NOT_CORRECT[lang], parse_mode="html"))
         sendAndDeleteMessage(message)
@@ -294,8 +297,17 @@ def deleteMessage(message):
     bot.delete_message(message.chat.id, message.message_id)
 
 
-# df = "Встречайте, Стикольщик - развлекательный чат-бот, общающийся на языке стикеров! С ним можно общаться в личных " \
-#      "сообщениях или добавить в групповой чат. А так же вызвать, просто написав его имя @StickerStickyBot с указанием " \
-#      "текста, выбрать стикер или гифку и отправить.\n\n\nt.me/StickerStickyBot 🔥\nt.me/StickerStickyBot 🔥\nt.me/StickerStickyBot 🔥"
-# bot.send_photo(1946632414,open('dog.jpg','rb'),df)
+def checkForSubscribe(message,lang):
+    try:
+        print(bot.get_chat_member("@s0und5l0ud", message.from_user.id).status)
+        if bot.get_chat_member("@s0und5l0ud", message.from_user.id).status not in Constants.ROLES:
+            raise Exception
+        return True
+    except Exception as e:
+        print(e)
+        markup = types.InlineKeyboardMarkup()
+        link = types.InlineKeyboardButton("✨ s0undCl0ud ✨", "https://t.me/s0und5l0ud")
+        markup.add(link)
+        bot.send_message(message.chat.id, Constants.PLEASE_SUBSCRIBE[lang],reply_markup=markup)
+        return False
 bot.infinity_polling()

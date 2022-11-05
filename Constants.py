@@ -1,5 +1,6 @@
 API_KEY = "5497414946:AAFByjMLiHy9xnKtzFv9I2CftSqglQT7gtY"
 DALLE_SESS = "sess-xV7eSnsJWIqMG1nuc7ZfotE8aHtLYS9F7qd5rxfF"
+ROLES = ["member", "administrator", "creator"]
 
 MY_CREDITS = {
     "ru": "Мои генерации 💰",
@@ -84,6 +85,11 @@ OPENART = {
 LANGUAGE_CHANGED = {
     "ru": "Язык успешно сменен. Просьба написать команду /start заново!",
     "en": "The language has been successfully changed. Please write the /start command again!"
+}
+
+PLEASE_SUBSCRIBE = {
+    "ru": "Для использования бота, пожалуйста подпишитесь на канал.",
+    "en": "To use the bot, please subscribe to the channel."
 }
 
 
